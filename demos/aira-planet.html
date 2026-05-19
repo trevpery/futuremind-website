@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>FutureMind · D1 · The Power of Role</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1A1A2E;
+  --blue:#1760A8;--blue-l:#E3EEFF;--blue-m:#C0D8F8;
+  --orange:#F0910A;--orange-l:#FFF3DC;--orange-d:#C07208;
+  --green:#18A058;--green-l:#E3F9EE;
+  --red:#E53935;--red-l:#FDECEA;
+  --yellow:#FFD60A;
+  --white:#FFFFFF;--off:#F9F7F4;--warm:#FFFCF8;
+  --border:#E8E2D9;--mid:#6B6560;--light:#B0A898;
+  --radius:20px;
+  --shadow:0 4px 24px rgba(26,26,46,.09);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%;overflow:hidden;background:#ECEAE6}
+body{font-family:'Nunito',sans-serif;color:var(--ink);height:100%;overflow:hidden;display:flex;justify-content:center;align-items:stretch;gap:0;background:#ECEAE6}
+.lesson-col{display:flex;flex-direction:column;width:520px;flex-shrink:0;background:var(--off);position:relative;overflow:hidden}
+.sidebar-col{width:220px;flex-shrink:0;background:var(--white);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+
+/* ── TOP BAR ── */
+.topbar{display:flex;align-items:center;gap:12px;padding:14px 20px 10px;background:var(--off);flex-shrink:0}
+.close-btn{width:34px;height:34px;border-radius:50%;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--light);flex-shrink:0}
+.progress-bar-wrap{flex:1;height:14px;background:var(--border);border-radius:7px;overflow:hidden}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--yellow));border-radius:7px;transition:width .6s cubic-bezier(.34,1.56,.64,1);min-width:0}
+.hearts{display:flex;gap:3px;align-items:center;flex-shrink:0}
+.heart{font-size:20px;transition:all .3s;display:inline-block}
+.heart.lost{filter:grayscale(1);opacity:.3;transform:scale(.85)}
+
+/* ── XP BADGE ── */
+.xp-badge{position:fixed;top:66px;left:50%;transform:translateX(-50%) translateY(-14px);background:var(--orange);color:var(--white);font-size:17px;font-weight:900;padding:7px 20px;border-radius:100px;opacity:0;pointer-events:none;z-index:200;transition:all .35s cubic-bezier(.34,1.56,.64,1);box-shadow:0 6px 20px rgba(240,145,10,.45);white-space:nowrap}
+.xp-badge.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── SCREENS ── */
+.screens{flex:1;overflow:hidden;position:relative}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;padding:8px 20px 16px;opacity:0;pointer-events:none;transform:translateX(46px);transition:all .38s cubic-bezier(.25,.46,.45,.94)}
+.screen.active{opacity:1;pointer-events:all;transform:translateX(0)}
+.screen.exiting{opacity:0;transform:translateX(-46px)}
+
+/* ── AIRA PLANET SVG ── */
+.aira-wrap{display:flex;justify-content:center;align-items:center;margin:4px 0 2px;flex-shrink:0}
+
+/* Planet moods via class on #airaGroup */
+@keyframes pFloat  {0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes pExcite {0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-11px) scale(1.06)}}
+@keyframes pSad    {0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(3px) rotate(-5deg)}}
+@keyframes pThink  {0%,100%{transform:rotate(0)}35%{transform:rotate(4deg)}70%{transform:rotate(-2deg)}}
+@keyframes pWobble {0%,100%{transform:rotate(0)}15%{transform:rotate(-7deg)}30%{transform:rotate(7deg)}45%{transform:rotate(-4deg)}60%{transform:rotate(3deg)}}
+@keyframes blink   {0%,88%,100%{transform:scaleY(1)}94%{transform:scaleY(.08)}}
+@keyframes blinkSad{0%,100%{transform:scaleY(.55) translateY(2px)}}
+@keyframes twinkle {0%,100%{opacity:.2}50%{opacity:1}}
+@keyframes ringPop {0%,100%{opacity:.45;stroke-width:4}50%{opacity:.95;stroke-width:7.5}}
+@keyframes ringDim {0%,100%{opacity:.12}50%{opacity:.28}}
+@keyframes burst   {0%,100%{opacity:.25;r:1.5}50%{opacity:1;r:3.2}}
+@keyframes sweatDrop{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(8px)}}
+@keyframes thoughtBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+
+.aira-planet{overflow:visible}
+#airaGroup{transform-origin:56px 56px}
+
+/* mood states applied by JS */
+.mood-happy   #airaGroup{animation:pFloat 3s ease-in-out infinite}
+.mood-excited #airaGroup{animation:pExcite 1.3s ease-in-out infinite}
+.mood-sad     #airaGroup{animation:pSad 4s ease-in-out infinite}
+.mood-think   #airaGroup{animation:pThink 3.5s ease-in-out infinite}
+.mood-wobble  #airaGroup{animation:pWobble 1.8s ease-in-out 1}
+.mood-celebrate #airaGroup{animation:pExcite .95s ease-in-out infinite}
+
+/* ring mood */
+.mood-happy    #ring1{animation:none;opacity:.5}
+.mood-excited  #ring1{animation:ringPop 1.3s ease-in-out infinite;stroke:#FFD60A}
+.mood-celebrate #ring1{animation:ringPop .95s ease-in-out infinite;stroke:#FFD60A}
+.mood-sad      #ring1{animation:ringDim 3s ease-in-out infinite}
+.mood-think    #ring1{stroke-dasharray:5 4}
+
+/* eye mood */
+.mood-happy    #eyes{animation:blink 4s ease-in-out infinite}
+.mood-excited  #eyes{animation:blink 3s ease-in-out infinite}
+.mood-celebrate #eyes{animation:none}
+.mood-sad      #eyes{animation:blinkSad 4s ease-in-out infinite}
+.mood-wobble   #eyes{animation:blink .5s ease-in-out 3}
+
+/* stars */
+.mood-excited   .pstar{animation:burst .85s ease-in-out infinite}
+.mood-celebrate .pstar{animation:burst .7s ease-in-out infinite}
+.mood-sad       .pstar{animation:twinkle 2.5s ease-in-out infinite;opacity:.2}
+.mood-happy     .pstar{animation:twinkle 2s ease-in-out infinite}
+
+/* sweat drop — visible only in sad/wobble */
+#sweatDrop{display:none}
+.mood-sad    #sweatDrop{display:block;animation:sweatDrop 2s ease-in-out infinite}
+.mood-wobble #sweatDrop{display:block;animation:sweatDrop 1.5s ease-in-out 2}
+
+/* thought bubble — visible only in think */
+#thoughtBubble{display:none}
+.mood-think #thoughtBubble{display:block;animation:thoughtBounce 2s ease-in-out infinite}
+
+/* celebrate star-eyes replace normal eyes */
+#eyeNormal{display:block}
+#eyeCelebrate{display:none}
+.mood-celebrate #eyeNormal{display:none}
+.mood-celebrate #eyeCelebrate{display:block}
+
+/* ── SPEECH BUBBLE ── */
+.speech-wrap{position:relative;margin:0 0 8px}
+.speech-bubble{
+  background:var(--white);border:2px solid var(--border);
+  border-radius:16px;padding:12px 16px;
+  font-size:14px;color:var(--ink);line-height:1.65;
+  box-shadow:var(--shadow);position:relative;
+  font-family:'Nunito Sans',sans-serif;
+}
+.speech-bubble::before{
+  content:'';position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);
+  border:9px solid transparent;border-top-color:var(--border);border-bottom:none;
+}
+.speech-bubble::after{
+  content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
+  border:8px solid transparent;border-top-color:var(--white);border-bottom:none;
+}
+.speech-bubble.correct-bub{border-color:rgba(24,160,88,.35);background:var(--green-l)}
+.speech-bubble.correct-bub::after{border-top-color:var(--green-l)}
+.speech-bubble.wrong-bub{border-color:rgba(229,57,53,.3);background:var(--red-l)}
+.speech-bubble.wrong-bub::after{border-top-color:var(--red-l)}
+
+/* ── LESSON TAG ── */
+.lesson-tag{font-size:10px;font-weight:800;letter-spacing:3px;color:var(--orange);margin-bottom:4px;text-align:center}
+
+/* ── INTRO ── */
+.intro-title{font-size:26px;font-weight:900;color:var(--ink);text-align:center;line-height:1.2;margin-bottom:10px}
+.intro-box{background:var(--orange-l);border:1.5px solid rgba(240,145,10,.2);border-radius:14px;padding:12px 16px;font-size:13px;color:var(--ink);line-height:1.65;font-family:'Nunito Sans',sans-serif;margin-bottom:8px}
+.intro-box strong{color:var(--orange-d)}
+.prompt-compare{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.p-bad{background:var(--red-l);border:1.5px solid rgba(229,57,53,.2);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--ink);line-height:1.6;font-family:'Nunito Sans',sans-serif}
+.p-bad::before{content:'😐  Without Role · ';font-weight:700;color:var(--red)}
+.p-good{background:var(--green-l);border:1.5px solid rgba(24,160,88,.2);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--ink);line-height:1.6;font-family:'Nunito Sans',sans-serif}
+.p-good::before{content:'✨  With Role · ';font-weight:700;color:var(--green)}
+.role-tag{display:inline;background:rgba(240,145,10,.15);color:var(--orange-d);font-weight:800;font-size:11px;padding:1px 7px;border-radius:5px;margin:0 2px}
+
+/* ── QUESTIONS ── */
+.q-title{font-size:19px;font-weight:800;color:var(--ink);line-height:1.3;margin-bottom:4px;text-align:center}
+.q-sub{font-size:13px;color:var(--mid);margin-bottom:12px;text-align:center;font-family:'Nunito Sans',sans-serif}
+.options-grid{display:flex;flex-direction:column;gap:9px;margin-bottom:10px}
+.option{display:flex;align-items:center;gap:12px;padding:13px 15px;background:var(--white);border:2.5px solid var(--border);border-radius:14px;cursor:pointer;transition:all .18s;text-align:left;width:100%;font-family:'Nunito',sans-serif;box-shadow:0 2px 8px rgba(26,26,46,.05)}
+.option:hover:not(:disabled){border-color:var(--blue);background:var(--blue-l);transform:translateY(-1px)}
+.option.selected{border-color:var(--blue);background:var(--blue-l)}
+.option.correct{border-color:var(--green);background:var(--green-l);animation:optBounce .4s cubic-bezier(.34,1.56,.64,1)}
+.option.wrong{border-color:var(--red);background:var(--red-l);animation:shake .4s ease}
+@keyframes optBounce{0%{transform:scale(1)}40%{transform:scale(1.03)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.option:disabled{pointer-events:none}
+.opt-letter{width:34px;height:34px;border-radius:9px;background:var(--off);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--mid);flex-shrink:0;transition:all .2s}
+.option.selected .opt-letter{background:var(--blue);color:var(--white)}
+.option.correct .opt-letter{background:var(--green);color:var(--white)}
+.option.wrong .opt-letter{background:var(--red);color:var(--white)}
+.opt-text{font-size:13px;font-weight:700;color:var(--ink);line-height:1.35}
+.opt-sub{font-size:11px;color:var(--mid);font-weight:400;font-family:'Nunito Sans',sans-serif;margin-top:2px}
+
+/* 2x2 grid */
+.options-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px}
+.option-card{padding:13px 10px;background:var(--white);border:2.5px solid var(--border);border-radius:14px;cursor:pointer;transition:all .18s;box-shadow:0 2px 8px rgba(26,26,46,.05);text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;font-family:'Nunito',sans-serif}
+.option-card:hover{border-color:var(--blue);background:var(--blue-l);transform:translateY(-2px)}
+.option-card.selected{border-color:var(--blue);background:var(--blue-l)}
+.option-card.correct{border-color:var(--green);background:var(--green-l);animation:optBounce .4s cubic-bezier(.34,1.56,.64,1)}
+.option-card.wrong{border-color:var(--red);background:var(--red-l);animation:shake .4s ease}
+.option-card:disabled{pointer-events:none}
+.oc-emoji{font-size:24px}
+.oc-text{font-size:12px;font-weight:700;color:var(--ink);line-height:1.3}
+
+/* scenario */
+.scenario-box{background:var(--white);border:1.5px solid var(--border);border-left:3.5px solid var(--blue);border-radius:0 12px 12px 0;padding:12px 15px;margin-bottom:10px;font-size:12px;color:var(--ink);line-height:1.7;font-family:'Nunito Sans',sans-serif}
+.scenario-label{font-size:9px;font-weight:800;letter-spacing:2px;color:var(--blue);margin-bottom:6px}
+.scenario-box.green-side{border-left-color:var(--green)}
+.scenario-box.green-side .scenario-label{color:var(--green)}
+
+/* match */
+.match-wrap{display:flex;gap:10px;margin-bottom:10px}
+.match-col{flex:1;display:flex;flex-direction:column;gap:7px}
+.match-item{padding:11px 12px;border-radius:11px;border:2.5px solid var(--border);background:var(--white);font-size:12px;font-weight:700;color:var(--ink);cursor:pointer;transition:all .2s;text-align:center;line-height:1.35;box-shadow:0 2px 5px rgba(26,26,46,.04)}
+.match-item:hover{border-color:var(--blue);background:var(--blue-l)}
+.match-item.selected{border-color:var(--orange);background:var(--orange-l)}
+.match-item.matched-correct{border-color:var(--green);background:var(--green-l);pointer-events:none}
+.match-item.matched-wrong{border-color:var(--red);background:var(--red-l);animation:shake .4s ease}
+
+/* fill blank */
+.prompt-builder{background:var(--white);border-radius:14px;padding:14px;box-shadow:var(--shadow);border:1.5px solid var(--border);font-size:13px;color:var(--ink);line-height:2;margin-bottom:10px;font-family:'Nunito Sans',sans-serif}
+.blank{display:inline-flex;align-items:center;justify-content:center;min-width:110px;height:32px;border-radius:8px;border:2.5px dashed var(--border);background:var(--off);margin:0 3px;padding:0 8px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;color:var(--orange-d);transition:all .2s;cursor:pointer;vertical-align:middle}
+.blank.filled{border-style:solid;border-color:var(--blue);background:var(--blue-l);color:var(--blue)}
+.blank.correct-blank{border-color:var(--green);background:var(--green-l);color:var(--green)}
+.blank.wrong-blank{border-color:var(--red);background:var(--red-l);color:var(--red)}
+.word-bank{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
+.word-chip{padding:7px 13px;border-radius:100px;border:2px solid var(--border);background:var(--white);font-size:12px;font-weight:700;color:var(--ink);cursor:pointer;transition:all .18s;box-shadow:0 2px 5px rgba(26,26,46,.05)}
+.word-chip:hover{border-color:var(--blue);background:var(--blue-l);transform:translateY(-1px)}
+.word-chip.used{opacity:.3;pointer-events:none}
+
+/* build */
+.build-output{background:var(--white);border-radius:14px;padding:13px;box-shadow:var(--shadow);border:1.5px solid var(--border);min-height:64px;font-size:13px;color:var(--ink);line-height:1.7;margin-bottom:10px;font-family:'Nunito Sans',sans-serif}
+.placeholder-txt{color:var(--light);font-style:italic;font-size:12px}
+
+/* actions */
+.q-actions{padding:0 20px 12px;flex-shrink:0}
+.hint-btn{background:none;border:none;color:var(--light);font-size:12px;cursor:pointer;transition:color .2s;font-family:'Nunito',sans-serif;padding:6px 0;display:block;margin-bottom:6px}
+.hint-btn:hover{color:var(--mid)}
+.hint-reveal{background:var(--orange-l);border:1px solid rgba(240,145,10,.25);border-radius:8px;padding:9px 13px;font-size:12px;color:var(--mid);line-height:1.6;display:none;margin-bottom:8px;font-family:'Nunito Sans',sans-serif}
+.main-btn{width:100%;padding:15px;border-radius:15px;border:none;font-size:15px;font-weight:800;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;letter-spacing:.2px}
+.btn-primary{background:var(--orange);color:var(--white);box-shadow:0 4px 0 var(--orange-d)}
+.btn-primary:hover{filter:brightness(1.05);transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(2px);box-shadow:0 2px 0 var(--orange-d)}
+.btn-disabled{background:var(--border);color:var(--light);pointer-events:none;box-shadow:none}
+.btn-next{background:var(--off);color:var(--mid);border:2px solid var(--border);box-shadow:none}
+.btn-next:hover{border-color:var(--mid);background:var(--white)}
+
+/* completion */
+.comp-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;height:100%;padding:16px}
+.comp-title{font-size:28px;font-weight:900;color:var(--ink);margin-bottom:6px}
+.comp-sub{font-size:14px;color:var(--mid);line-height:1.6;margin-bottom:20px;font-family:'Nunito Sans',sans-serif;max-width:320px}
+.comp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;margin-bottom:20px}
+.stat-box{background:var(--white);border-radius:14px;padding:14px 8px;box-shadow:var(--shadow);border:1.5px solid var(--border)}
+.stat-n{font-size:26px;font-weight:900;color:var(--orange)}
+.stat-l{font-size:10px;font-weight:700;color:var(--mid);margin-top:2px;letter-spacing:.5px}
+.dim-badge{background:var(--blue-l);border:1.5px solid var(--blue-m);border-radius:12px;padding:10px 18px;font-size:12px;font-weight:700;color:var(--blue);margin-bottom:16px}
+
+/* ── SIDEBAR ── */
+.sb-header{padding:20px 16px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.sb-title{font-size:11px;font-weight:800;letter-spacing:2px;color:var(--orange);margin-bottom:4px}
+.sb-sub{font-size:12px;color:var(--mid);font-weight:600;line-height:1.4}
+.sb-topics{flex:1;overflow-y:auto;padding:12px 10px;display:flex;flex-direction:column;gap:6px}
+.sb-topics::-webkit-scrollbar{width:3px}
+.sb-topics::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.topic-row{display:flex;align-items:center;gap:10px;padding:10px 10px;border-radius:12px;border:1.5px solid var(--border);background:var(--off);transition:all .35s ease;position:relative;overflow:hidden}
+.topic-row.active{border-color:var(--orange);background:var(--orange-l)}
+.topic-row.done{border-color:var(--green);background:var(--green-l)}
+.topic-row.locked{opacity:.45}
+.topic-icon{width:32px;height:32px;border-radius:9px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;transition:all .3s}
+.topic-row.active .topic-icon{background:var(--orange);box-shadow:0 3px 10px rgba(240,145,10,.35)}
+.topic-row.done .topic-icon{background:var(--green);box-shadow:0 3px 10px rgba(24,160,88,.3)}
+.topic-info{flex:1;min-width:0}
+.topic-name{font-size:12px;font-weight:800;color:var(--ink);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topic-row.active .topic-name{color:var(--orange-d)}
+.topic-row.done .topic-name{color:var(--green)}
+.topic-row.locked .topic-name{color:var(--light)}
+.topic-desc{font-size:10px;color:var(--light);font-weight:600;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Nunito Sans',sans-serif}
+.topic-row.active .topic-desc{color:var(--orange-d);opacity:.7}
+.topic-row.done .topic-desc{color:var(--green);opacity:.7}
+.topic-status{font-size:14px;flex-shrink:0}
+.topic-row .topic-bar{position:absolute;bottom:0;left:0;height:2px;background:var(--orange);width:0%;transition:width .5s ease;border-radius:0 0 0 0}
+.topic-row.done .topic-bar{width:100%;background:var(--green)}
+.topic-row.active .topic-bar{width:60%}
+.sb-footer{padding:14px 16px;border-top:1px solid var(--border);flex-shrink:0;background:var(--off)}
+.sb-xp-label{font-size:9px;font-weight:800;letter-spacing:2px;color:var(--light);margin-bottom:4px}
+.sb-xp-val{font-family:'Nunito',sans-serif;font-size:28px;font-weight:900;color:var(--orange);line-height:1}
+
+/* confetti */
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:500;overflow:hidden}
+.cp{position:absolute;top:-10px;border-radius:2px;animation:confFall 1.5s ease-in forwards}
+@keyframes confFall{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:0;transform:translateY(110vh) rotate(720deg)}}
+
+/* streak pips */
+.streak-row{display:flex;gap:5px;justify-content:center;margin-bottom:6px}
+.sp{width:28px;height:5px;border-radius:3px;background:var(--border);transition:all .4s}
+.sp.done{background:var(--green)}
+.sp.cur{background:var(--orange)}
+</style>
+</head>
+<body>
+
+<div class="lesson-col">
+<div class="xp-badge" id="xpBadge">+10 XP ⚡</div>
+<div class="confetti-wrap" id="confettiWrap"></div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <button class="close-btn" onclick="if(confirm('Exit lesson?'))window.close()">✕</button>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="hearts">
+    <span class="heart" id="h1">❤️</span>
+    <span class="heart" id="h2">❤️</span>
+    <span class="heart" id="h3">❤️</span>
+  </div>
+</div>
+
+<!-- SCREENS -->
+<div class="screens" id="screens">
+
+<!-- ═══ S0: INTRO ═══ -->
+<div class="screen active" id="s0">
+  <div class="lesson-tag">D1 · PROMPT ENGINEERING</div>
+  <div class="aira-wrap" id="aw0"></div>
+  <div class="speech-wrap">
+    <div class="speech-bubble" id="sb0">Hi! I'm <strong>AIRA</strong> — your AI Research Assistant. Today we explore the most powerful prompt trick: giving AI a <strong>Role</strong>. Ready?</div>
+  </div>
+  <div class="intro-title">The Power of Role</div>
+  <div class="intro-box">
+    A <strong>Role</strong> tells the AI <em>who to be</em> before it answers. One small addition — huge difference in output.
+    <div class="prompt-compare">
+      <div class="p-bad">Write about climate change.</div>
+      <div class="p-good">You are a <span class="role-tag">science journalist</span> writing for Class 8 students. Write about climate change in India.</div>
+    </div>
+  </div>
+  <div style="margin-top:auto"></div>
+</div>
+
+<!-- ═══ S1 ═══ -->
+<div class="screen" id="s1">
+  <div class="streak-row"><div class="sp cur" id="sp0"></div><div class="sp" id="sp1"></div><div class="sp" id="sp2"></div><div class="sp" id="sp3"></div><div class="sp" id="sp4"></div><div class="sp" id="sp5"></div></div>
+  <div class="aira-wrap" id="aw1"></div>
+  <div class="speech-wrap"><div class="speech-bubble" id="sb1">Tap the part of this prompt that is the <strong>Role</strong>.</div></div>
+  <div class="q-title">Which part is the Role?</div>
+  <div class="prompt-builder" style="margin-bottom:12px">
+    <span class="option" id="s1a" onclick="s1pick(this,'wrong')" style="display:inline-flex;margin:3px;padding:7px 11px;min-height:unset;border-radius:9px;cursor:pointer;box-shadow:none"><span class="opt-text" style="font-size:12px">Write a 3-minute script</span></span>
+    about water conservation,
+    <span class="option" id="s1b" onclick="s1pick(this,'correct')" style="display:inline-flex;margin:3px;padding:7px 11px;min-height:unset;border-radius:9px;cursor:pointer;box-shadow:none"><span class="opt-text" style="font-size:12px">You are a Bollywood screenwriter</span></span>
+    for a school film festival.
+    <span class="option" id="s1c" onclick="s1pick(this,'wrong')" style="display:inline-flex;margin:3px;padding:7px 11px;min-height:unset;border-radius:9px;cursor:pointer;box-shadow:none"><span class="opt-text" style="font-size:12px">for a school film festival</span></span>
+  </div>
+  <div style="margin-top:auto"></div>
+</div>
+
+<!-- ═══ S2 ═══ -->
+<div class="screen" id="s2">
+  <div class="streak-row"><div class="sp done" id="sp0b"></div><div class="sp cur" id="sp1b"></div><div class="sp" id="sp2b"></div><div class="sp" id="sp3b"></div><div class="sp" id="sp4b"></div><div class="sp" id="sp5b"></div></div>
+  <div class="aira-wrap" id="aw2"></div>
+  <div class="speech-wrap"><div class="speech-bubble" id="sb2">A doctor needs help explaining diabetes. Which prompt gives <strong>better</strong> results?</div></div>
+  <div class="q-title">Pick the stronger prompt.</div>
+  <div class="options-grid" id="s2opts">
+    <button class="option" onclick="s2pick(this,'wrong')"><div class="opt-letter">A</div><div><div class="opt-text">"Explain diabetes."</div><div class="opt-sub">Short, no context</div></div></button>
+    <button class="option" onclick="s2pick(this,'correct')"><div class="opt-letter">B</div><div><div class="opt-text">"You are a patient-friendly doctor. Explain diabetes to a worried 60-year-old in 3 simple points."</div><div class="opt-sub">Role + Task + Audience</div></div></button>
+  </div>
+</div>
+
+<!-- ═══ S3: MATCH ═══ -->
+<div class="screen" id="s3">
+  <div class="streak-row"><div class="sp done"></div><div class="sp done"></div><div class="sp cur"></div><div class="sp"></div><div class="sp"></div><div class="sp"></div></div>
+  <div class="aira-wrap" id="aw3"></div>
+  <div class="speech-wrap"><div class="speech-bubble" id="sb3">Tap a Role, then tap its matching job. Get them all!</div></div>
+  <div class="q-title">Match the Role to the job.</div>
+  <div class="match-wrap">
+    <div class="match-col" id="mLeft">
+      <div class="match-item" id="ml0" data-id="0" onclick="matchTap('l',this)">Science journalist</div>
+      <div class="match-item" id="ml1" data-id="1" onclick="matchTap('l',this)">Defence lawyer</div>
+      <div class="match-item" id="ml2" data-id="2" onclick="matchTap('l',this)">Agricultural expert</div>
+    </div>
+    <div class="match-col" id="mRight">
+      <div class="match-item" id="mr0" data-id="1" onclick="matchTap('r',this)">Defending a client in court</div>
+      <div class="match-item" id="mr1" data-id="2" onclick="matchTap('r',this)">Advising farmers on crop disease</div>
+      <div class="match-item" id="mr2" data-id="0" onclick="matchTap('r',this)">Explaining research to the public</div>
+    </div>
+  </div>
+  <div style="margin-top:auto"></div>
+</div>
+
+<!-- ═══ S4: FILL BLANK ═══ -->
+<div class="screen" id="s4">
+  <div class="streak-row"><div class="sp done"></div><div class="sp done"></div><div class="sp done"></div><div class="sp cur"></div><div class="sp"></div><div class="sp"></div></div>
+  <div class="aira-wrap" id="aw4"></div>
+  <div class="speech-wrap"><div class="speech-bubble" id="sb4">Tap a word chip, then tap the blank to complete the prompt.</div></div>
+  <div class="q-title">Fill in the Role.</div>
+  <div class="prompt-builder">
+    <span id="s4blank" class="blank" onclick="fillBlank()">(tap to fill)</span> Write a WhatsApp message for a farmer explaining the government's crop insurance scheme. Under 50 words.
+  </div>
+  <div class="word-bank" id="s4bank">
+    <div class="word-chip" onclick="selectWord(this,'You are a government agriculture officer.')">You are a government agriculture officer.</div>
+    <div class="word-chip" onclick="selectWord(this,'Please be nice.')">Please be nice.</div>
+    <div class="word-chip" onclick="selectWord(this,'Write more words.')">Write more words.</div>
+    <div class="word-chip" onclick="selectWord(this,'Hello farmer.')">Hello farmer.</div>
+  </div>
+  <div style="margin-top:auto"></div>
+</div>
+
+<!-- ═══ S5: 4-CARD PICK ═══ -->
+<div class="screen" id="s5">
+  <div class="streak-row"><div class="sp done"></div><div class="sp done"></div><div class="sp done"></div><div class="sp done"></div><div class="sp cur"></div><div class="sp"></div></div>
+  <div class="aira-wrap" id="aw5"></div>
+  <div class="speech-wrap"><div class="speech-bubble" id="sb5">Which Role gives the best result for an Independence Day speech?</div></div>
+  <div class="q-title">Pick the strongest Role.</div>
+  <div class="options-grid-2" id="s5opts">
+    <button class="option-card" onclick="s5pick(this,'wrong')"><div class="oc-emoji">🤖</div><div class="oc-text">You are a helpful AI assistant.</div></button>
+    <button class="option-card" onclick="s5pick(this,'correct')"><div class="oc-emoji">🎤</div><div class="oc-text">You are an experienced school speechwriter.</div></button>
+    <button class="option-card" onclick="s5pick(this,'wrong')"><div class="oc-emoji">📚</div><div class="oc-text">You are a history encyclopedia.</div></button>
+    <button class="option-card" onclick="s5pick(this,'wrong')"><div class="oc-emoji">💬</div><div class="oc-text">You are a chatbot.</div></button>
+  </div>
+</div>
+
+<!-- ═══ S6: BUILD PROMPT ═══ -->
+<div class="screen" id="s6">
+  <div class="streak-row"><div class="sp done"></div><div class="sp done"></div><div class="sp done"></div><div class="sp done"></div><div class="sp done"></div><div class="sp cur"></div></div>
+  <div class="aira-wrap" id="aw6"></div>
+  <div class="speech-wrap"><div class="speech-bubble" id="sb6">Tap the pieces that belong in a strong prompt. Skip the fillers!</div></div>
+  <div class="q-title">Build a strong prompt.</div>
+  <div class="build-output" id="s6out"><span class="placeholder-txt">Your prompt builds here as you tap pieces...</span></div>
+  <div class="word-bank" id="s6bank">
+    <div class="word-chip" data-order="1" onclick="togglePiece(this)">You are a nutritionist.</div>
+    <div class="word-chip" data-order="3" onclick="togglePiece(this)">Write a 7-day meal plan</div>
+    <div class="word-chip" data-order="2" onclick="togglePiece(this)">for a 14-year-old student</div>
+    <div class="word-chip" data-order="0" onclick="togglePiece(this)">Hello!</div>
+    <div class="word-chip" data-order="4" onclick="togglePiece(this)">under 150 words.</div>
+    <div class="word-chip" data-order="5" onclick="togglePiece(this)">okay thanks</div>
+  </div>
+  <div style="margin-top:auto"></div>
+</div>
+
+<!-- ═══ S7: COMPLETION ═══ -->
+<div class="screen" id="s7">
+  <div class="comp-wrap">
+    <div class="aira-wrap" id="aw7" style="margin-bottom:6px"></div>
+    <div class="speech-wrap" style="width:100%"><div class="speech-bubble correct-bub" id="sb7">You caught every mistake I set up and built a strong prompt yourself. You've got this! 🚀</div></div>
+    <div class="comp-title">Lesson Complete!</div>
+    <div class="comp-sub">You've mastered the Role element. Every strong prompt starts with telling AI who to be.</div>
+    <div class="dim-badge">📘 D1 · Prompt Engineering — Role ✓</div>
+    <div class="comp-stats">
+      <div class="stat-box"><div class="stat-n" id="finalXP">0</div><div class="stat-l">XP</div></div>
+      <div class="stat-box"><div class="stat-n" id="finalC">0</div><div class="stat-l">CORRECT</div></div>
+      <div class="stat-box"><div class="stat-n" id="finalH">3</div><div class="stat-l">HEARTS</div></div>
+    </div>
+    <button class="main-btn btn-primary" onclick="alert('Next lesson: Task — telling AI exactly what to do!')">Next Lesson: Task →</button>
+    <button class="main-btn" style="background:none;color:var(--mid);font-size:13px;margin-top:8px;padding:10px;cursor:pointer" onclick="location.reload()">Practice Again</button>
+  </div>
+</div>
+
+</div><!-- /screens -->
+
+<!-- Q ACTIONS -->
+<div class="q-actions" id="qActions">
+  <button class="hint-btn" id="hintBtn" onclick="showHint()">💡 Need a hint?</button>
+  <div class="hint-reveal" id="hintBox"></div>
+  <button class="main-btn btn-primary" id="mainBtn" onclick="mainAction()" style="display:none">Let's go! →</button>
+  <button class="main-btn btn-disabled" id="submitBtn" onclick="submitAnswer()" style="display:none">Submit</button>
+  <button class="main-btn btn-next" id="nextBtn" onclick="nextQuestion()">Continue →</button>
+</div>
+</div><!-- /lesson-col -->
+
+<!-- SIDEBAR -->
+<div class="sidebar-col" id="sidebarCol">
+  <div class="sb-header">
+    <div class="sb-title">D1 · Prompt Engineering</div>
+    <div class="sb-sub">7 concepts · This lesson: Role</div>
+  </div>
+  <div class="sb-topics" id="sbTopics"></div>
+  <div class="sb-footer">
+    <div class="sb-xp-label">XP THIS LESSON</div>
+    <div class="sb-xp-val" id="sbXP">0</div>
+  </div>
+</div>
+
+<script>
+// ── AIRA PLANET SVG FACTORY ───────────────────────────────────────────────────
+function makePlanet(size, mood, uid) {
+  const s = size || 88;
+  const u = uid || 'p';
+  const svg = `<svg class="aira-planet" width="${s}" height="${s}" viewBox="0 0 112 112" style="overflow:visible">
+  <defs>
+    <radialGradient id="pg-${u}" cx="38%" cy="32%">
+      <stop offset="0%" stop-color="#A8D4FF"/>
+      <stop offset="55%" stop-color="#4A9EE8"/>
+      <stop offset="100%" stop-color="#1D5FA0"/>
+    </radialGradient>
+    <radialGradient id="pg2-${u}" cx="38%" cy="32%">
+      <stop offset="0%" stop-color="#C4E8FF"/>
+      <stop offset="50%" stop-color="#5AADFF"/>
+      <stop offset="100%" stop-color="#1D70C4"/>
+    </radialGradient>
+    <clipPath id="pclip-${u}"><circle cx="56" cy="56" r="28"/></clipPath>
+  </defs>
+  <g id="airaGroup-${u}">
+    <!-- Ring back -->
+    <ellipse id="ring1-${u}" cx="56" cy="56" rx="44" ry="11" fill="none" stroke="#85B7EB" stroke-width="4"
+      style="transform:rotate(-20deg) scaleY(0.32);transform-origin:56px 56px" opacity="0.5"/>
+    <!-- Body -->
+    <circle cx="56" cy="56" r="28" fill="url(#pg-${u})"/>
+    <!-- Surface -->
+    <g clip-path="url(#pclip-${u})">
+      <ellipse cx="47" cy="50" rx="11" ry="7" fill="#3B9AE0" opacity="0.38" transform="rotate(-15,47,50)"/>
+      <ellipse cx="64" cy="62" rx="9" ry="6" fill="#2E87CC" opacity="0.3" transform="rotate(10,64,62)"/>
+      <ellipse cx="52" cy="68" rx="7" ry="4" fill="#4AADE0" opacity="0.28"/>
+    </g>
+    <!-- Ring front -->
+    <ellipse cx="56" cy="56" rx="44" ry="11" fill="none" stroke="#B5D4F4" stroke-width="3.5"
+      style="clip-path:inset(50% 0 0 0);transform:rotate(-20deg) scaleY(0.32);transform-origin:56px 56px" opacity="0.65"/>
+    <!-- Normal eyes -->
+    <g id="eyeNormal-${u}" style="transform-origin:56px 53px;animation:blink 4s ease-in-out infinite">
+      <ellipse cx="48" cy="53" rx="4" ry="4.5" fill="white"/>
+      <ellipse cx="48" cy="54" rx="2.2" ry="2.8" fill="#0C447C"/>
+      <circle cx="49.2" cy="52.4" r="1" fill="white"/>
+      <ellipse cx="64" cy="53" rx="4" ry="4.5" fill="white"/>
+      <ellipse cx="64" cy="54" rx="2.2" ry="2.8" fill="#0C447C"/>
+      <circle cx="65.2" cy="52.4" r="1" fill="white"/>
+    </g>
+    <!-- Celebrate star eyes -->
+    <g id="eyeCelebrate-${u}">
+      <text x="47" y="57" font-size="11" text-anchor="middle" fill="white" font-family="sans-serif">★</text>
+      <text x="65" y="57" font-size="11" text-anchor="middle" fill="white" font-family="sans-serif">★</text>
+    </g>
+    <!-- Mouth — changes per mood via JS attr -->
+    <path id="mouth-${u}" d="M50 62 Q56 66.5 62 62" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" opacity="0.9"/>
+    <!-- Stars -->
+    <circle class="pstar" cx="28" cy="28" r="2" fill="#FFD60A" style="animation:twinkle 2s ease-in-out infinite"/>
+    <circle class="pstar" cx="88" cy="30" r="1.5" fill="#FFD60A" style="animation:twinkle 1.7s ease-in-out infinite 0.6s"/>
+    <circle class="pstar" cx="86" cy="82" r="2" fill="#85B7EB" style="animation:twinkle 2.3s ease-in-out infinite 1.1s"/>
+    <circle class="pstar" cx="24" cy="80" r="1.5" fill="#FFD60A" style="animation:twinkle 1.9s ease-in-out infinite 0.4s"/>
+    <!-- Celebration extra bursts (always present, opacity controlled by mood) -->
+    <circle class="pstar" cx="16" cy="16" r="2.5" fill="#FFD60A" style="animation:burst .8s ease-in-out infinite;opacity:0"/>
+    <circle class="pstar" cx="96" cy="14" r="2.2" fill="#F09995" style="animation:burst .8s ease-in-out infinite .2s;opacity:0"/>
+    <circle class="pstar" cx="100" cy="90" r="2.5" fill="#9FE1CB" style="animation:burst .8s ease-in-out infinite .4s;opacity:0"/>
+    <circle class="pstar" cx="12" cy="92" r="2" fill="#AFA9EC" style="animation:burst .8s ease-in-out infinite .15s;opacity:0"/>
+    <!-- Sweat drop (sad) -->
+    <g id="sweatDrop-${u}" style="transform-origin:78px 38px">
+      <circle cx="78" cy="38" r="2.5" fill="#B5D4F4" opacity="0.8"/>
+      <path d="M78 41 L76.5 45.5" fill="none" stroke="#B5D4F4" stroke-width="1.6" stroke-linecap="round" opacity="0.6"/>
+    </g>
+    <!-- Thought bubble (think) -->
+    <g id="thoughtBubble-${u}">
+      <circle cx="74" cy="32" r="1.5" fill="white" opacity="0.65"/>
+      <circle cx="79" cy="27" r="2" fill="white" opacity="0.55"/>
+      <circle cx="85" cy="21" r="3" fill="white" opacity="0.45"/>
+    </g>
+  </g>
+</svg>`;
+  return svg;
+}
+
+// ── Set AIRA mood ─────────────────────────────────────────────────────────────
+function setMood(wrapId, mood) {
+  const wrap = document.getElementById(wrapId);
+  if (!wrap) return;
+  wrap.className = wrap.className.replace(/mood-\w+/g,'').trim() + ' mood-' + mood;
+  const svg = wrap.querySelector('.aira-planet');
+  if (!svg) return;
+  const uid = wrap.id;
+  const mouth = svg.querySelector('[id^="mouth"]');
+  if (mouth) {
+    if (mood==='sad'||mood==='wobble') mouth.setAttribute('d','M50 65 Q56 61 62 65');
+    else if (mood==='think') mouth.setAttribute('d','M50 63 Q56 65 62 63');
+    else mouth.setAttribute('d','M50 62 Q56 66.5 62 62');
+  }
+  svg.querySelectorAll('.pstar').forEach((s,i) => {
+    if (i>=4) s.style.opacity = (mood==='celebrate'||mood==='excited') ? '1' : '0';
+  });
+  const sd = svg.querySelector('[id^="sweatDrop"]');
+  if (sd) sd.style.display = (mood==='sad'||mood==='wobble') ? 'block' : 'none';
+  const tb = svg.querySelector('[id^="thoughtBubble"]');
+  if (tb) tb.style.display = mood==='think' ? 'block' : 'none';
+  const en = svg.querySelector('[id^="eyeNormal"]');
+  const ec = svg.querySelector('[id^="eyeCelebrate"]');
+  if (en) en.style.display = mood==='celebrate' ? 'none' : 'block';
+  if (ec) ec.style.display = mood==='celebrate' ? 'block' : 'none';
+  const ring = svg.querySelector('[id^="ring1"]');
+  if (ring) {
+    if (mood==='excited'||mood==='celebrate') {
+      ring.setAttribute('stroke','#FFD60A');
+      ring.style.animation = 'ringPop '+(mood==='celebrate'?'.95':'1.3')+'s ease-in-out infinite';
+    } else if (mood==='sad') {
+      ring.setAttribute('stroke','#5A8AAC');
+      ring.style.animation = 'ringDim 3s ease-in-out infinite';
+    } else {
+      ring.setAttribute('stroke','#85B7EB');
+      ring.style.animation = '';
+    }
+  }
+  const grp = svg.querySelector('[id^="airaGroup"]');
+  if (grp) {
+    const anims = {
+      happy:'pFloat 3s ease-in-out infinite',
+      excited:'pExcite 1.3s ease-in-out infinite',
+      celebrate:'pExcite .95s ease-in-out infinite',
+      sad:'pSad 4s ease-in-out infinite',
+      think:'pThink 3.5s ease-in-out infinite',
+      wobble:'pWobble 1.8s ease-in-out 1',
+    };
+    grp.style.animation = anims[mood] || anims.happy;
+  }
+}
+
+// ── Build all AIRA instances ──────────────────────────────────────────────────
+const airaScreens = [
+  {id:'aw0',mood:'happy',size:80},
+  {id:'aw1',mood:'think',size:72},
+  {id:'aw2',mood:'happy',size:72},
+  {id:'aw3',mood:'happy',size:72},
+  {id:'aw4',mood:'think',size:72},
+  {id:'aw5',mood:'happy',size:72},
+  {id:'aw6',mood:'happy',size:72},
+  {id:'aw7',mood:'celebrate',size:88},
+];
+airaScreens.forEach(a => {
+  const el = document.getElementById(a.id);
+  if (el) el.innerHTML = makePlanet(a.size, a.mood, a.id);
+});
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let curScreen = 0, xp = 0, correct = 0, hearts = 3;
+let s4selWord = null, s4filled = false;
+let matchL = null, matchR = null, matchDone = 0;
+let s6pieces = [];
+let hintShown = false;
+const hints = [
+  null,
+  'The Role always starts with "You are..." — it tells AI what character to inhabit.',
+  'The better prompt gives the AI a specific job title and tells it who to write for.',
+  'Match by thinking: what professional would you hire for each task?',
+  'A Role tells the AI its expertise. Which chip establishes an expert identity?',
+  'The strongest Role is specific to the actual job — not a generic description of AI.',
+  'A strong prompt needs: Role ("You are..."), Task (what to write), Audience (for whom), Constraint (how long).',
+];
+
+// ── SHOW ACTIONS PER SCREEN ───────────────────────────────────────────────────
+function setupActions(n) {
+  document.getElementById('mainBtn').style.display   = 'none';
+  document.getElementById('submitBtn').style.display = 'none';
+  const nb = document.getElementById('nextBtn');
+  nb.style.display = 'none';
+  nb.style.opacity = '0';
+  document.getElementById('hintBtn').style.display   = n > 0 && n < 7 ? 'block' : 'none';
+  document.getElementById('hintBox').style.display   = 'none';
+  hintShown = false;
+  if (n === 0) {
+    document.getElementById('mainBtn').style.display = 'block';
+    document.getElementById('mainBtn').textContent = "Let's go! →";
+    document.getElementById('mainBtn').onclick = () => goScreen(1);
+    document.getElementById('hintBtn').style.display = 'none';
+  }
+  if (n === 3) {
+    document.getElementById('submitBtn').style.display = 'block';
+    document.getElementById('submitBtn').className = 'main-btn btn-disabled';
+    document.getElementById('submitBtn').textContent = 'Check Matches →';
+    document.getElementById('submitBtn').onclick = checkMatch;
+  }
+  if (n === 4) {
+    document.getElementById('submitBtn').style.display = 'block';
+    document.getElementById('submitBtn').className = 'main-btn btn-disabled';
+    document.getElementById('submitBtn').textContent = 'Check →';
+    document.getElementById('submitBtn').onclick = checkFill;
+  }
+  if (n === 6) {
+    document.getElementById('submitBtn').style.display = 'block';
+    document.getElementById('submitBtn').className = 'main-btn btn-disabled';
+    document.getElementById('submitBtn').textContent = 'Check My Prompt →';
+    document.getElementById('submitBtn').onclick = checkBuild;
+  }
+}
+
+function mainAction() {}
+
+// ── SCREEN NAVIGATION ─────────────────────────────────────────────────────────
+function goScreen(n) {
+  const cur = document.getElementById('s'+curScreen);
+  const nxt = document.getElementById('s'+n);
+  if (!nxt) return;
+  cur.classList.add('exiting');
+  setTimeout(() => cur.classList.remove('active','exiting'), 380);
+  nxt.classList.add('active');
+  curScreen = n;
+  document.getElementById('progressFill').style.width = (n/7*100)+'%';
+  setupActions(n);
+  updateSidebar(n);
+  if (n > 0 && n < 7) setMood('aw'+n, 'think');
+  window.scrollTo(0,0);
+}
+
+// ── XP & HEARTS ───────────────────────────────────────────────────────────────
+function addXP(pts) {
+  xp += pts;
+  const b = document.getElementById('xpBadge');
+  b.textContent = '+'+pts+' XP ⚡';
+  const sbXPel = document.getElementById('sbXP'); if(sbXPel) sbXPel.textContent = xp+pts;
+  b.classList.add('show');
+  setTimeout(() => b.classList.remove('show'), 1700);
+}
+function loseHeart() {
+  hearts = Math.max(0, hearts-1);
+  const h = document.getElementById('h'+(3-hearts));
+  if (h) { h.classList.add('lost'); h.textContent='🖤'; }
+}
+function fireConfetti() {
+  const wrap = document.getElementById('confettiWrap');
+  const cols = ['#F0910A','#FFD60A','#18A058','#1760A8','#E53935','#FF69B4','#AFA9EC'];
+  for (let i=0;i<38;i++) {
+    const p = document.createElement('div');
+    p.className = 'cp';
+    const w = 6+Math.random()*7, h2 = 6+Math.random()*7;
+    p.style.cssText = `left:${Math.random()*100}%;background:${cols[~~(Math.random()*cols.length)]};width:${w}px;height:${h2}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-delay:${Math.random()*.4}s;animation-duration:${1.2+Math.random()*.6}s`;
+    wrap.appendChild(p);
+    setTimeout(() => p.remove(), 2200);
+  }
+}
+
+// ── FEEDBACK via AIRA speech bubble ──────────────────────────────────────────
+function airaSay(screenId, wrapId, msg, mood, bubbleClass) {
+  setMood(wrapId, mood);
+  const sb = document.getElementById(screenId);
+  if (!sb) return;
+  sb.className = 'speech-bubble ' + (bubbleClass||'');
+  sb.innerHTML = msg;
+  if (mood === 'excited' || mood === 'celebrate') { fireConfetti(); correct++; addXP(10); }
+  if (mood === 'sad' || mood === 'wobble') loseHeart();
+}
+
+function showNextBtn() {
+  document.getElementById('submitBtn').style.display = 'none';
+  document.getElementById('mainBtn').style.display   = 'none';
+  document.getElementById('hintBtn').style.display   = 'none';
+  const nb = document.getElementById('nextBtn');
+  nb.style.display  = 'block';
+  nb.style.opacity  = '1';
+  nb.style.pointerEvents = 'auto';
+  nb.textContent    = 'Continue →';
+  nb.onclick        = nextQuestion;
+}
+
+function nextQuestion() {
+  goScreen(curScreen + 1);
+}
+
+function showHint() {
+  const box = document.getElementById('hintBox');
+  box.style.display = 'block';
+  box.innerHTML = '💡 ' + (hints[curScreen] || 'Think carefully!');
+  document.getElementById('hintBtn').style.display = 'none';
+  hintShown = true;
+  airaSay('sb'+curScreen,'aw'+curScreen,"Here's a hint! Take another look at the question.", 'think','');
+}
+
+// ── S1: TAP THE ROLE ──────────────────────────────────────────────────────────
+function s1pick(el, res) {
+  ['s1a','s1b','s1c'].forEach(id => { const b=document.getElementById(id); b.onclick=null; b.style.cursor='default'; });
+  if (res==='correct') {
+    el.classList.add('correct');
+    airaSay('sb1','aw1','✅ Yes! <strong>"You are a Bollywood screenwriter"</strong> is the Role. It puts AI in character before writing anything. Always starts with "You are..."','excited','correct-bub');
+    showNextBtn();
+  } else {
+    el.classList.add('wrong');
+    airaSay('sb1','aw1','😬 Not quite! The Role is <strong>"You are a Bollywood screenwriter"</strong> — the part that gives AI an identity. "Write a script" is the Task.','wobble','wrong-bub');
+    setTimeout(() => showNextBtn(), 400);
+  }
+}
+
+// ── S2: BETTER PROMPT ─────────────────────────────────────────────────────────
+function s2pick(btn, res) {
+  document.querySelectorAll('#s2opts .option').forEach(b => { b.onclick=null; b.disabled=true; });
+  btn.classList.add(res==='correct'?'correct':'wrong');
+  if (res==='correct') {
+    airaSay('sb2','aw2','⭐ Exactly! Option B adds <strong>Role</strong> (patient-friendly doctor), <strong>Audience</strong> (worried 60-year-old), and <strong>Constraint</strong> (3 points). Each element shapes the AI\'s entire response style.','excited','correct-bub');
+  } else {
+    document.querySelectorAll('#s2opts .option')[1].classList.add('correct');
+    airaSay('sb2','aw2','Not this time! "Explain diabetes" gives me no context — I\'ll write a generic, probably too-technical answer. Option B\'s <strong>Role</strong> tells me exactly how to communicate.','sad','wrong-bub');
+  }
+  showNextBtn();
+}
+
+// ── S3: MATCH ─────────────────────────────────────────────────────────────────
+let mLeftSel=null, mRightSel=null, mDone=0;
+function matchTap(side, el) {
+  if (side==='l') {
+    document.querySelectorAll('#mLeft .match-item').forEach(e => { if(!e.classList.contains('matched-correct')) e.classList.remove('selected'); });
+    el.classList.add('selected'); mLeftSel=el;
+  } else {
+    document.querySelectorAll('#mRight .match-item').forEach(e => { if(!e.classList.contains('matched-correct')) e.classList.remove('selected'); });
+    el.classList.add('selected'); mRightSel=el;
+  }
+  if (mLeftSel && mRightSel) {
+    if (mLeftSel.dataset.id === mRightSel.dataset.id) {
+      mLeftSel.classList.replace('selected','matched-correct');
+      mRightSel.classList.replace('selected','matched-correct');
+      mLeftSel.onclick=null; mRightSel.onclick=null;
+      mDone++; addXP(3);
+      if (mDone===3) {
+        airaSay('sb3','aw3','🎉 All matched! A science journalist explains research clearly, a lawyer defends clients, an agricultural expert advises farmers. Roles match the <em>exact</em> profession.','celebrate','correct-bub');
+        correct++; fireConfetti();
+        document.getElementById('submitBtn').style.display='none';
+        setTimeout(() => showNextBtn(), 300);
+      } else {
+        setMood('aw3','excited');
+        setTimeout(() => setMood('aw3','happy'), 1000);
+      }
+    } else {
+      mLeftSel.classList.add('matched-wrong'); mRightSel.classList.add('matched-wrong');
+      const lE=mLeftSel, rE=mRightSel;
+      setTimeout(() => { lE.classList.remove('matched-wrong','selected'); rE.classList.remove('matched-wrong','selected'); }, 500);
+      loseHeart();
+      setMood('aw3','wobble');
+      setTimeout(() => setMood('aw3','think'), 1200);
+    }
+    mLeftSel=null; mRightSel=null;
+  }
+  if (mDone < 3) {
+    document.getElementById('submitBtn').className = mDone>0 ? 'main-btn btn-primary' : 'main-btn btn-disabled';
+  }
+}
+function checkMatch() { if(mDone===3) nextQuestion(); }
+
+// ── S4: FILL BLANK ────────────────────────────────────────────────────────────
+function selectWord(chip, word) {
+  document.querySelectorAll('#s4bank .word-chip').forEach(c => c.classList.remove('selected'));
+  chip.classList.add('selected');
+  s4selWord = {chip, word};
+  if (s4filled) {
+    const blank = document.getElementById('s4blank');
+    blank.textContent = word;
+    document.querySelectorAll('#s4bank .word-chip').forEach(c => { if(!c.classList.contains('selected')) c.classList.remove('used'); });
+    chip.classList.add('used');
+    s4selWord = null;
+    document.getElementById('submitBtn').className = 'main-btn btn-primary';
+  }
+}
+function fillBlank() {
+  if (!s4selWord) return;
+  const blank = document.getElementById('s4blank');
+  blank.textContent = s4selWord.word;
+  blank.classList.add('filled');
+  s4selWord.chip.classList.add('used');
+  s4selWord = null;
+  s4filled = true;
+  document.getElementById('submitBtn').className = 'main-btn btn-primary';
+}
+function checkFill() {
+  const val = document.getElementById('s4blank').textContent;
+  const ok = val.includes('agriculture officer');
+  document.getElementById('s4blank').classList.add(ok?'correct-blank':'wrong-blank');
+  document.getElementById('submitBtn').onclick=null;
+  document.querySelectorAll('#s4bank .word-chip').forEach(c=>c.onclick=null);
+  if (ok) {
+    airaSay('sb4','aw4','✅ <strong>"You are a government agriculture officer"</strong> — perfect Role! The AI will now write with official authority in language a farmer would trust.','excited','correct-bub');
+  } else {
+    airaSay('sb4','aw4','Not quite! The correct Role is <strong>"You are a government agriculture officer"</strong> — this gives AI an authoritative, trusted identity for the farmer context.','sad','wrong-bub');
+  }
+  showNextBtn();
+}
+
+// ── S5: 4-CARD ────────────────────────────────────────────────────────────────
+function s5pick(btn, res) {
+  document.querySelectorAll('#s5opts .option-card').forEach(b => { b.onclick=null; b.disabled=true; });
+  btn.classList.add(res==='correct'?'correct':'wrong');
+  if (res==='correct') {
+    airaSay('sb5','aw5','🌟 Yes! <strong>"Experienced school speechwriter"</strong> is specific — it tells AI the context (school), format (speech), and expertise level. "Helpful AI assistant" adds nothing at all.','excited','correct-bub');
+  } else {
+    document.querySelectorAll('#s5opts .option-card')[1].classList.add('correct');
+    airaSay('sb5','aw5','The strongest Role is <strong>"experienced school speechwriter"</strong>. "Helpful AI assistant" is what I already am — saying it changes nothing. Be specific!','sad','wrong-bub');
+  }
+  showNextBtn();
+}
+
+// ── S6: BUILD PROMPT ──────────────────────────────────────────────────────────
+function togglePiece(chip) {
+  const ord = parseInt(chip.dataset.order);
+  const isSel = chip.classList.contains('selected');
+  if (isSel) { chip.classList.remove('selected'); s6pieces = s6pieces.filter(o=>o!==ord); }
+  else { chip.classList.add('selected'); s6pieces.push(ord); }
+  rebuildPrompt();
+  document.getElementById('submitBtn').className = s6pieces.length>=3 ? 'main-btn btn-primary' : 'main-btn btn-disabled';
+}
+function rebuildPrompt() {
+  const out = document.getElementById('s6out');
+  if (!s6pieces.length) { out.innerHTML='<span class="placeholder-txt">Your prompt builds here as you tap pieces...</span>'; return; }
+  const sorted = [...s6pieces].sort((a,b)=>a-b);
+  const chips = document.querySelectorAll('#s6bank .word-chip');
+  const map={};
+  chips.forEach(c => { map[parseInt(c.dataset.order)]=c.textContent; });
+  out.innerHTML = sorted.map(o=>`<strong>${map[o]}</strong> `).join('');
+}
+function checkBuild() {
+  const hasRole = s6pieces.includes(1);
+  const hasGood = s6pieces.includes(1)&&s6pieces.includes(2)&&s6pieces.includes(3);
+  const noJunk  = !s6pieces.includes(0)&&!s6pieces.includes(5);
+  document.querySelectorAll('#s6bank .word-chip').forEach(c=>c.onclick=null);
+  document.getElementById('submitBtn').onclick=null;
+  if (hasGood && noJunk) {
+    airaSay('sb6','aw6','🏆 Perfect prompt! Role ✓ · Audience ✓ · Task ✓ · Constraint ✓ — and you skipped the filler. This is exactly how professionals use AI.','celebrate','correct-bub');
+    setTimeout(showCompletion, 1200);
+  } else if (hasRole) {
+    airaSay('sb6','aw6','Good — you included the Role! For a stronger prompt also add: Task (write a 7-day meal plan), Audience (14-year-old student), and Constraint (under 150 words). Skip "Hello!" and "okay thanks."','think','');
+    setTimeout(showCompletion, 1400);
+  } else {
+    airaSay('sb6','aw6','The most important piece is <strong>"You are a nutritionist"</strong> — the Role! Without it I have no expertise to draw from. Always start with who I should be.','sad','wrong-bub');
+    setTimeout(showCompletion, 1400);
+  }
+}
+
+// ── COMPLETION ────────────────────────────────────────────────────────────────
+function showCompletion() {
+  document.getElementById('finalXP').textContent = xp;
+  document.getElementById('finalC').textContent  = correct;
+  document.getElementById('finalH').textContent  = hearts;
+  fireConfetti();
+  setTimeout(fireConfetti, 700);
+  goScreen(7);
+  setMood('aw7','celebrate');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+
+// ── SIDEBAR TOPICS ────────────────────────────────────────────────────────────
+const TOPICS = [
+  { icon:'🎭', name:'Role',       desc:'Who should AI be?',        screen:1 },
+  { icon:'🎯', name:'Task',       desc:'What should AI do?',       screen:null },
+  { icon:'👥', name:'Audience',   desc:'Who will read this?',      screen:null },
+  { icon:'📐', name:'Format',     desc:'How should it look?',      screen:null },
+  { icon:'🌍', name:'Context',    desc:'Background information',   screen:null },
+  { icon:'🔒', name:'Constraint', desc:'Length, tone, limits',     screen:null },
+  { icon:'🔄', name:'Iteration',  desc:'Refine & improve',         screen:null },
+];
+
+function buildSidebar() {
+  const wrap = document.getElementById('sbTopics');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  TOPICS.forEach((t, i) => {
+    const div = document.createElement('div');
+    div.className = 'topic-row' + (i===0 ? ' active' : ' locked');
+    div.id = 'topic-'+i;
+    div.innerHTML = `
+      <div class="topic-icon">${t.icon}</div>
+      <div class="topic-info">
+        <div class="topic-name">${t.name}</div>
+        <div class="topic-desc">${t.desc}</div>
+      </div>
+      <div class="topic-status" id="ts-${i}">${i===0 ? '▶' : '🔒'}</div>
+      <div class="topic-bar"></div>
+    `;
+    wrap.appendChild(div);
+  });
+}
+
+function updateSidebar(screenNum) {
+  // Topic 0 (Role) is covered in screens 1-6 of this lesson
+  // Mark Role as done when we pass screen 6
+  const roleRow = document.getElementById('topic-0');
+  if (roleRow) {
+    if (screenNum >= 7) {
+      roleRow.className = 'topic-row done';
+      document.getElementById('ts-0').textContent = '✅';
+    } else if (screenNum >= 1) {
+      roleRow.className = 'topic-row active';
+      document.getElementById('ts-0').textContent = '▶';
+    }
+  }
+  // Update sidebar XP
+  const sbXP = document.getElementById('sbXP');
+  if (sbXP) sbXP.textContent = xp;
+}
+
+buildSidebar();
+
+setupActions(0);
+</script>
+</body>
+</html>

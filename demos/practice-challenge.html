@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FutureMind — D1 Practice Challenge: Prompt Engineering</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0B1D35;
+  --blue:#1760A8;
+  --blue-l:#E8F2FF;
+  --blue-m:#C0D8F8;
+  --orange:#F0A020;
+  --orange-l:#FEF6E0;
+  --green:#0C6B50;
+  --green-l:#E0F5EC;
+  --red:#C0392B;
+  --red-l:#FDECEA;
+  --coral:#D4500A;
+  --white:#FFFFFF;
+  --off:#F7F5F1;
+  --warm:#FFFCF8;
+  --border:#E4DDD4;
+  --mid:#5C5650;
+  --light:#9C9488;
+  --dim1:#1760A8;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--white);display:flex;flex-direction:column}
+
+/* ── TOP BAR ──────────────────────────────────────────── */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;height:56px;background:rgba(255,255,255,.04);
+  border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;
+}
+.topbar-left{display:flex;align-items:center;gap:16px}
+.fm-logo{
+  font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;
+  color:var(--white);display:flex;align-items:center;gap:8px;
+}
+.logo-sq{width:24px;height:24px;background:var(--blue);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--white);letter-spacing:0}
+.practice-badge{
+  background:rgba(23,96,168,.3);border:1px solid rgba(23,96,168,.5);
+  color:#7BBDFF;font-size:11px;font-weight:500;padding:3px 10px;border-radius:100px;
+}
+.topbar-center{display:flex;align-items:center;gap:8px}
+.q-dots{display:flex;gap:6px}
+.q-dot{
+  width:28px;height:6px;border-radius:3px;
+  background:rgba(255,255,255,.12);transition:all .4s ease;
+  cursor:pointer;
+}
+.q-dot.answered{background:rgba(23,96,168,.6)}
+.q-dot.current{background:var(--blue);box-shadow:0 0 8px rgba(23,96,168,.6)}
+.q-dot.correct-dot{background:var(--green)}
+.q-dot.wrong-dot{background:var(--red)}
+.topbar-right{display:flex;align-items:center;gap:20px}
+.score-display{
+  display:flex;align-items:center;gap:6px;
+  font-size:13px;font-weight:500;color:rgba(255,255,255,.7);
+}
+.score-num{font-family:'Nunito',sans-serif;font-size:18px;font-weight:800;color:var(--orange)}
+.confidence-wrap{display:flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,.4)}
+.conf-bar{width:80px;height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden}
+.conf-fill{height:100%;border-radius:3px;background:var(--orange);transition:width .5s ease}
+
+/* ── MAIN ─────────────────────────────────────────────── */
+.main{
+  display:grid;grid-template-columns:1fr 340px;
+  flex:1;overflow:hidden;
+}
+
+/* ── QUESTION PANEL ───────────────────────────────────── */
+.q-panel{
+  display:flex;flex-direction:column;
+  border-right:1px solid rgba(255,255,255,.06);
+  overflow:hidden;
+}
+.q-scroll{flex:1;overflow-y:auto;padding:32px 36px}
+.q-scroll::-webkit-scrollbar{width:3px}
+.q-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+
+/* Question meta */
+.q-meta{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.gear-tag{
+  font-size:10px;font-weight:700;letter-spacing:2px;
+  padding:4px 10px;border-radius:100px;
+}
+.gear1-tag{background:rgba(23,96,168,.25);color:#7BBDFF;border:1px solid rgba(23,96,168,.3)}
+.gear2-tag{background:rgba(240,160,32,.2);color:var(--orange);border:1px solid rgba(240,160,32,.3)}
+.gear3-tag{background:rgba(212,80,10,.2);color:#FF8C60;border:1px solid rgba(212,80,10,.3)}
+.q-num{font-size:11px;color:rgba(255,255,255,.35);font-weight:500}
+.q-pts{font-size:11px;color:var(--orange);font-weight:600;margin-left:auto}
+
+/* Career tag */
+.career-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  border-radius:100px;padding:4px 12px;font-size:11px;color:rgba(255,255,255,.5);
+  margin-bottom:16px;
+}
+
+/* Question text */
+.q-text{
+  font-size:16px;font-weight:400;line-height:1.75;color:var(--white);
+  margin-bottom:20px;
+}
+.q-text strong{color:var(--orange)}
+
+/* Scenario box */
+.scenario-box{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-left:3px solid var(--blue);border-radius:0 10px 10px 0;
+  padding:16px 20px;margin-bottom:20px;
+  font-size:13px;color:rgba(255,255,255,.75);line-height:1.75;
+}
+.scenario-box .scenario-label{
+  font-size:9px;font-weight:700;letter-spacing:2px;color:var(--blue);
+  margin-bottom:8px;display:flex;align-items:center;gap:6px;
+}
+.prompt-display{
+  background:#0D1F38;border:1px solid rgba(23,96,168,.3);border-radius:8px;
+  padding:14px 16px;margin:10px 0;font-family:monospace;font-size:12px;
+  color:#7BBDFF;line-height:1.7;
+}
+.prompt-element{
+  display:inline;border-radius:3px;padding:1px 4px;margin:0 1px;
+  font-size:11px;font-weight:600;
+}
+.pe-role{background:rgba(23,96,168,.3);color:#7BBDFF}
+.pe-task{background:rgba(12,107,80,.3);color:#6ED4B0}
+.pe-format{background:rgba(240,160,32,.2);color:var(--orange)}
+.pe-context{background:rgba(74,53,168,.3);color:#B8A8FF}
+.pe-constraint{background:rgba(212,80,10,.2);color:#FF8C60}
+
+/* Options */
+.options-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.option-btn{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:14px 16px;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);border-radius:12px;
+  cursor:pointer;transition:all .2s;text-align:left;width:100%;
+  font-family:'DM Sans',sans-serif;
+}
+.option-btn:hover:not(:disabled){
+  background:rgba(23,96,168,.15);border-color:rgba(23,96,168,.4);
+}
+.option-btn:disabled{cursor:default}
+.option-btn.selected{background:rgba(23,96,168,.2);border-color:var(--blue)}
+.option-btn.correct-ans{background:rgba(12,107,80,.2);border-color:var(--green)}
+.option-btn.wrong-ans{background:rgba(192,57,43,.15);border-color:var(--red)}
+.opt-letter{
+  width:26px;height:26px;border-radius:7px;
+  background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:rgba(255,255,255,.5);flex-shrink:0;margin-top:1px;
+  transition:all .2s;
+}
+.option-btn.selected .opt-letter{background:var(--blue);color:var(--white)}
+.option-btn.correct-ans .opt-letter{background:var(--green);color:var(--white)}
+.option-btn.wrong-ans .opt-letter{background:var(--red);color:var(--white)}
+.opt-text{font-size:13px;color:rgba(255,255,255,.75);line-height:1.55}
+
+/* Gear 3 text input */
+.gear3-input-wrap{margin-bottom:20px}
+.gear3-label{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:8px;font-weight:500}
+.gear3-textarea{
+  width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);
+  border-radius:10px;padding:14px 16px;font-family:'DM Sans',sans-serif;
+  font-size:13px;color:var(--white);line-height:1.65;resize:none;height:100px;
+  transition:border-color .2s;
+}
+.gear3-textarea:focus{outline:none;border-color:var(--blue)}
+.gear3-textarea::placeholder{color:rgba(255,255,255,.2)}
+.word-counter{font-size:11px;color:rgba(255,255,255,.3);text-align:right;margin-top:4px}
+.keyword-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.kw-chip{
+  padding:3px 10px;border-radius:100px;font-size:10px;font-weight:600;
+  background:rgba(255,255,255,.06);color:rgba(255,255,255,.35);
+  transition:all .3s;border:1px solid rgba(255,255,255,.08);
+}
+.kw-chip.found{background:rgba(12,107,80,.25);color:#6ED4B0;border-color:rgba(12,107,80,.4)}
+
+/* Submit / Next */
+.q-actions{padding:0 36px 24px;flex-shrink:0}
+.submit-btn{
+  width:100%;padding:13px;background:var(--blue);color:var(--white);
+  border:none;border-radius:10px;font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;
+}
+.submit-btn:hover:not(:disabled){background:#125088;transform:translateY(-1px)}
+.submit-btn:disabled{opacity:.35;pointer-events:none;transform:none}
+.next-q-btn{
+  width:100%;padding:13px;background:rgba(255,255,255,.06);color:var(--white);
+  border:1px solid rgba(255,255,255,.12);border-radius:10px;font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;display:none;
+}
+.next-q-btn:hover{background:rgba(255,255,255,.1)}
+
+/* Hint */
+.hint-btn{
+  background:none;border:none;color:rgba(255,255,255,.3);font-size:12px;
+  cursor:pointer;transition:color .2s;font-family:'DM Sans',sans-serif;
+  padding:8px 0;display:block;margin-bottom:10px;
+}
+.hint-btn:hover{color:rgba(255,255,255,.6)}
+.hint-reveal{
+  background:rgba(240,160,32,.1);border:1px solid rgba(240,160,32,.2);
+  border-radius:8px;padding:10px 14px;font-size:12px;color:rgba(255,255,255,.65);
+  line-height:1.6;display:none;margin-bottom:10px;
+}
+
+/* ── AIRA PANEL ───────────────────────────────────────── */
+
+/* ── AIRA PLANET ── */
+.aira-planet-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 20px 12px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0}
+.aira-planet-name{font-size:10px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.4)}
+.aira-planet-state{font-size:11px;color:var(--blue);font-weight:500;min-height:16px;text-align:center}
+@keyframes pcFloat  {0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes pcExcite {0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-10px) scale(1.06)}}
+@keyframes pcSad    {0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(3px) rotate(-4deg)}}
+@keyframes pcThink  {0%,100%{transform:rotate(0)}35%{transform:rotate(4deg)}70%{transform:rotate(-2deg)}}
+@keyframes pcWobble {0%,100%{transform:rotate(0)}15%{transform:rotate(-7deg)}30%{transform:rotate(7deg)}45%{transform:rotate(-4deg)}60%{transform:rotate(3deg)}}
+@keyframes pcBlink  {0%,88%,100%{transform:scaleY(1)}94%{transform:scaleY(.08)}}
+@keyframes pcBlinkSad{0%,100%{transform:scaleY(.55) translateY(2px)}}
+@keyframes pcRingPop{0%,100%{opacity:.45;stroke-width:4}50%{opacity:.95;stroke-width:7.5}}
+@keyframes pcRingDim{0%,100%{opacity:.12}50%{opacity:.28}}
+@keyframes pcTwinkle{0%,100%{opacity:.2}50%{opacity:1}}
+@keyframes pcBurst  {0%,100%{opacity:.25;r:1.5}50%{opacity:1;r:3.2}}
+@keyframes pcSweat  {0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(8px)}}
+@keyframes pcThought{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+
+.aira-panel{
+  display:flex;flex-direction:column;background:rgba(255,255,255,.02);
+  overflow:hidden;
+}
+.aira-header{
+  padding:20px 24px 16px;border-bottom:1px solid rgba(255,255,255,.06);
+  flex-shrink:0;
+}
+.aira-status{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.aira-avatar-lg{
+  width:44px;height:44px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue) 0%,#0D3A6E 100%);
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  box-shadow:0 4px 20px rgba(23,96,168,.4);flex-shrink:0;
+}
+.aira-name-wrap{}
+.aira-name{font-size:12px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,.5)}
+.aira-state{font-size:11px;color:var(--blue);margin-top:1px}
+
+/* Thinking dots */
+.thinking-dots{display:flex;gap:4px;align-items:center}
+.t-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:tdot 1.2s ease-in-out infinite}
+.t-dot:nth-child(2){animation-delay:.2s}
+.t-dot:nth-child(3){animation-delay:.4s}
+@keyframes tdot{0%,80%,100%{transform:scale(.8);opacity:.4}40%{transform:scale(1.1);opacity:1}}
+
+/* AIRA messages */
+.aira-messages{flex:1;overflow-y:auto;padding:16px 20px}
+.aira-messages::-webkit-scrollbar{width:3px}
+.aira-messages::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.aira-msg{
+  margin-bottom:14px;animation:msgIn .4s ease both;
+}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg-bubble{
+  background:rgba(23,96,168,.15);border:1px solid rgba(23,96,168,.2);
+  border-radius:0 12px 12px 12px;padding:12px 14px;
+  font-size:13px;color:rgba(255,255,255,.8);line-height:1.65;
+}
+.msg-bubble.correct-msg{
+  background:rgba(12,107,80,.2);border-color:rgba(12,107,80,.3);
+}
+.msg-bubble.wrong-msg{
+  background:rgba(192,57,43,.15);border-color:rgba(192,57,43,.3);
+}
+.msg-bubble.tip-msg{
+  background:rgba(240,160,32,.1);border-color:rgba(240,160,32,.2);
+}
+.msg-bubble strong{color:var(--white)}
+.msg-bubble .concept{
+  display:inline-block;background:rgba(23,96,168,.3);border-radius:4px;
+  padding:1px 6px;font-size:11px;font-weight:600;color:#7BBDFF;
+  margin:0 1px;
+}
+.msg-time{font-size:10px;color:rgba(255,255,255,.2);margin-top:4px;padding-left:2px}
+
+/* Concepts tracker */
+.concepts-wrap{
+  padding:14px 20px;border-top:1px solid rgba(255,255,255,.06);flex-shrink:0;
+}
+.concepts-label{font-size:9px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.25);margin-bottom:10px}
+.concept-pills{display:flex;flex-wrap:wrap;gap:6px}
+.cpill{
+  padding:4px 10px;border-radius:100px;font-size:10px;font-weight:600;
+  border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.3);
+  transition:all .4s ease;
+}
+.cpill.seen{border-color:rgba(23,96,168,.5);color:#7BBDFF;background:rgba(23,96,168,.15)}
+
+/* ── RESULTS OVERLAY ──────────────────────────────────── */
+.results-overlay{
+  position:fixed;inset:0;background:rgba(11,29,53,.96);
+  display:flex;align-items:center;justify-content:center;
+  z-index:200;display:none;
+  backdrop-filter:blur(8px);
+}
+.results-overlay.show{display:flex}
+.results-card{
+  background:var(--navy);border:1px solid rgba(255,255,255,.1);
+  border-radius:24px;padding:48px;max-width:560px;width:100%;
+  text-align:center;animation:resultIn .5s ease both;
+  box-shadow:0 32px 80px rgba(0,0,0,.4);
+}
+@keyframes resultIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+.result-trophy{font-size:64px;margin-bottom:16px}
+.result-title{font-family:'Nunito',sans-serif;font-size:32px;font-weight:800;color:var(--white);margin-bottom:8px}
+.result-score{font-family:'Nunito',sans-serif;font-size:56px;font-weight:800;color:var(--orange);line-height:1;margin-bottom:6px}
+.result-max{font-size:14px;color:rgba(255,255,255,.35);margin-bottom:24px}
+.result-breakdown{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px;
+}
+.rb-item{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;padding:14px;
+}
+.rb-num{font-family:'Nunito',sans-serif;font-size:24px;font-weight:800;color:var(--white);line-height:1}
+.rb-label{font-size:10px;color:rgba(255,255,255,.35);margin-top:4px;letter-spacing:.5px}
+.aira-final{
+  background:rgba(23,96,168,.15);border:1px solid rgba(23,96,168,.2);
+  border-radius:12px;padding:16px;margin-bottom:24px;
+  font-size:13px;color:rgba(255,255,255,.7);line-height:1.65;text-align:left;
+}
+.aira-final-head{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--blue);margin-bottom:8px}
+.result-btns{display:flex;gap:10px;justify-content:center}
+.res-btn{
+  padding:12px 24px;border-radius:10px;font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;border:none;
+}
+.res-btn-primary{background:var(--blue);color:var(--white)}
+.res-btn-primary:hover{background:#125088}
+.res-btn-secondary{background:rgba(255,255,255,.06);color:var(--white);border:1px solid rgba(255,255,255,.1)}
+.res-btn-secondary:hover{background:rgba(255,255,255,.1)}
+
+/* ── XP TOAST ─────────────────────────────────────────── */
+.xp-toast{
+  position:fixed;top:70px;right:24px;z-index:300;
+  background:var(--orange);color:var(--navy);
+  font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;
+  padding:8px 20px;border-radius:100px;
+  opacity:0;transform:translateY(-8px) scale(.9);
+  transition:all .3s ease;pointer-events:none;
+  box-shadow:0 6px 24px rgba(240,160,32,.4);
+}
+.xp-toast.show{opacity:1;transform:translateY(0) scale(1)}
+</style>
+</head>
+<body>
+
+<!-- XP TOAST -->
+<div class="xp-toast" id="xpToast">+10 XP</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="fm-logo"><div class="logo-sq">FM</div>FUTUREMIND</div>
+    <div class="practice-badge">PRACTICE CHALLENGE</div>
+    <span style="font-size:12px;color:rgba(255,255,255,.3);font-weight:500">D1 — Prompt Engineering</span>
+  </div>
+  <div class="topbar-center">
+    <div class="q-dots" id="qDots"></div>
+  </div>
+  <div class="topbar-right">
+    <div class="confidence-wrap">
+      AI SENSE
+      <div class="conf-bar"><div class="conf-fill" id="confFill" style="width:0%"></div></div>
+      <span id="confPct">0%</span>
+    </div>
+    <div class="score-display">
+      SCORE <span class="score-num" id="scoreNum">0</span>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- QUESTION PANEL -->
+  <div class="q-panel">
+    <div class="q-scroll" id="qScroll">
+      <div id="qContent"><!-- injected --></div>
+    </div>
+    <div class="q-actions">
+      <button class="hint-btn" id="hintBtn" onclick="showHint()">💡 Need a hint?</button>
+      <div class="hint-reveal" id="hintBox"></div>
+      <button class="submit-btn" id="submitBtn" onclick="submitAnswer()" disabled>Submit Answer</button>
+      <button class="next-q-btn" id="nextBtn" onclick="nextQuestion()">Next Question →</button>
+    </div>
+  </div>
+
+  <!-- AIRA PANEL -->
+  <div class="aira-panel">
+    <div class="aira-planet-wrap">
+      <div id="airaplanet"></div>
+      <div class="aira-planet-name">AIRA</div>
+      <div class="aira-planet-state" id="airaState">Ready to help</div>
+    </div>
+    <div class="aira-messages" id="airaMessages">
+      <div class="aira-msg">
+        <div class="msg-bubble">
+          <strong>Welcome to the D1 Practice Challenge!</strong><br><br>
+          Prompt Engineering is about communicating with AI precisely. The better you direct me, the better I perform.<br><br>
+          There are 7 questions — Gear 1, Gear 2, and one Gear 3 Signature question. Take your time. I'll explain every answer in detail.
+        </div>
+        <div class="msg-time">Just now</div>
+      </div>
+    </div>
+    <div class="concepts-wrap">
+      <div class="concepts-label">CONCEPTS COVERED</div>
+      <div class="concept-pills">
+        <div class="cpill" id="cp-role">Role</div>
+        <div class="cpill" id="cp-task">Task</div>
+        <div class="cpill" id="cp-format">Format</div>
+        <div class="cpill" id="cp-context">Context</div>
+        <div class="cpill" id="cp-constraint">Constraint</div>
+        <div class="cpill" id="cp-iteration">Iteration</div>
+        <div class="cpill" id="cp-audience">Audience</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS OVERLAY -->
+<div class="results-overlay" id="resultsOverlay">
+  <div class="results-card">
+    <div class="result-trophy" id="resTrophy">🏆</div>
+    <div class="result-title" id="resTitle">Practice Complete!</div>
+    <div class="result-score" id="resScore">0</div>
+    <div class="result-max">out of 70 points</div>
+    <div class="result-breakdown">
+      <div class="rb-item"><div class="rb-num" id="rbCorrect">0</div><div class="rb-label">CORRECT</div></div>
+      <div class="rb-item"><div class="rb-num" id="rbXP">0</div><div class="rb-label">XP EARNED</div></div>
+      <div class="rb-item"><div class="rb-num" id="rbHints">0</div><div class="rb-label">HINTS USED</div></div>
+    </div>
+    <div class="aira-final">
+      <div class="aira-final-head">🤖 AIRA'S VERDICT</div>
+      <div id="airaVerdict"></div>
+    </div>
+    <div class="result-btns">
+      <button class="res-btn res-btn-secondary" onclick="restartChallenge()">Try Again</button>
+      <button class="res-btn res-btn-primary" onclick="alert('In the full platform, this takes you to the real competition!')">Enter Competition →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+// ── AIRA PLANET ──────────────────────────────────────────────────────────────
+function makePlanetPC(size) {
+  const s = size || 80;
+  return `<svg width="${s}" height="${s}" viewBox="0 0 112 112" style="overflow:visible" id="pcPlanetSVG">
+  <defs>
+    <radialGradient id="pcpg" cx="38%" cy="32%">
+      <stop offset="0%" stop-color="#A8D4FF"/>
+      <stop offset="55%" stop-color="#4A9EE8"/>
+      <stop offset="100%" stop-color="#1D5FA0"/>
+    </radialGradient>
+    <clipPath id="pcclip"><circle cx="56" cy="56" r="28"/></clipPath>
+  </defs>
+  <g id="pcGroup" style="transform-origin:56px 56px;animation:pcFloat 3s ease-in-out infinite">
+    <ellipse id="pcRing" cx="56" cy="56" rx="44" ry="11" fill="none" stroke="#85B7EB" stroke-width="4"
+      style="transform:rotate(-20deg) scaleY(0.32);transform-origin:56px 56px" opacity="0.5"/>
+    <circle cx="56" cy="56" r="28" fill="url(#pcpg)"/>
+    <g clip-path="url(#pcclip)">
+      <ellipse cx="47" cy="50" rx="11" ry="7" fill="#3B9AE0" opacity="0.38" transform="rotate(-15,47,50)"/>
+      <ellipse cx="64" cy="62" rx="9" ry="6" fill="#2E87CC" opacity="0.3" transform="rotate(10,64,62)"/>
+    </g>
+    <ellipse cx="56" cy="56" rx="44" ry="11" fill="none" stroke="#B5D4F4" stroke-width="3.5"
+      style="clip-path:inset(50% 0 0 0);transform:rotate(-20deg) scaleY(0.32);transform-origin:56px 56px" opacity="0.65"/>
+    <g id="pcEyeNorm" style="transform-origin:56px 53px;animation:pcBlink 4s ease-in-out infinite">
+      <ellipse cx="48" cy="53" rx="4" ry="4.5" fill="white"/>
+      <ellipse cx="48" cy="54" rx="2.2" ry="2.8" fill="#0C447C"/>
+      <circle cx="49.2" cy="52.4" r="1" fill="white"/>
+      <ellipse cx="64" cy="53" rx="4" ry="4.5" fill="white"/>
+      <ellipse cx="64" cy="54" rx="2.2" ry="2.8" fill="#0C447C"/>
+      <circle cx="65.2" cy="52.4" r="1" fill="white"/>
+    </g>
+    <g id="pcEyeStar" style="display:none">
+      <text x="47" y="57" font-size="11" text-anchor="middle" fill="white" font-family="sans-serif">★</text>
+      <text x="65" y="57" font-size="11" text-anchor="middle" fill="white" font-family="sans-serif">★</text>
+    </g>
+    <path id="pcMouth" d="M50 62 Q56 66.5 62 62" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" opacity="0.9"/>
+    <circle class="pcStar" cx="28" cy="28" r="2" fill="#FFD60A" style="animation:pcTwinkle 2s ease-in-out infinite"/>
+    <circle class="pcStar" cx="88" cy="30" r="1.5" fill="#FFD60A" style="animation:pcTwinkle 1.7s ease-in-out infinite 0.6s"/>
+    <circle class="pcStar" cx="86" cy="82" r="2" fill="#85B7EB" style="animation:pcTwinkle 2.3s ease-in-out infinite 1.1s"/>
+    <circle class="pcStar" cx="24" cy="80" r="1.5" fill="#FFD60A" style="animation:pcTwinkle 1.9s ease-in-out infinite 0.4s"/>
+    <circle class="pcBurst" cx="16" cy="16" r="2.5" fill="#FFD60A" style="opacity:0"/>
+    <circle class="pcBurst" cx="96" cy="14" r="2.2" fill="#F09995" style="opacity:0"/>
+    <circle class="pcBurst" cx="100" cy="90" r="2.5" fill="#9FE1CB" style="opacity:0"/>
+    <circle class="pcBurst" cx="12" cy="92" r="2" fill="#AFA9EC" style="opacity:0"/>
+    <g id="pcSweat" style="display:none">
+      <circle cx="78" cy="38" r="2.5" fill="#B5D4F4" opacity="0.8"/>
+      <path d="M78 41 L76.5 45.5" fill="none" stroke="#B5D4F4" stroke-width="1.6" stroke-linecap="round"/>
+    </g>
+    <g id="pcThought" style="display:none;animation:pcThought 2s ease-in-out infinite">
+      <circle cx="74" cy="32" r="1.5" fill="white" opacity="0.65"/>
+      <circle cx="79" cy="27" r="2" fill="white" opacity="0.55"/>
+      <circle cx="85" cy="21" r="3" fill="white" opacity="0.45"/>
+    </g>
+  </g>
+</svg>`;
+}
+
+function setPlanetMood(mood) {
+  const grp = document.getElementById('pcGroup');
+  const ring = document.getElementById('pcRing');
+  const mouth = document.getElementById('pcMouth');
+  const eyeN = document.getElementById('pcEyeNorm');
+  const eyeS = document.getElementById('pcEyeStar');
+  const sweat = document.getElementById('pcSweat');
+  const thought = document.getElementById('pcThought');
+  if (!grp) return;
+  const anims = {
+    happy:'pcFloat 3s ease-in-out infinite',
+    think:'pcThink 3.5s ease-in-out infinite',
+    excited:'pcExcite 1.3s ease-in-out infinite',
+    celebrate:'pcExcite .95s ease-in-out infinite',
+    sad:'pcSad 4s ease-in-out infinite',
+    wobble:'pcWobble 1.8s ease-in-out 1',
+  };
+  grp.style.animation = anims[mood] || anims.happy;
+  if (mouth) {
+    if (mood==='sad'||mood==='wobble') mouth.setAttribute('d','M50 65 Q56 61 62 65');
+    else if (mood==='think') mouth.setAttribute('d','M50 63 Q56 65 62 63');
+    else mouth.setAttribute('d','M50 62 Q56 66.5 62 62');
+  }
+  if (ring) {
+    if (mood==='excited'||mood==='celebrate') {
+      ring.setAttribute('stroke','#FFD60A');
+      ring.style.animation = 'pcRingPop '+(mood==='celebrate'?'.95':'1.3')+'s ease-in-out infinite';
+    } else if (mood==='sad') {
+      ring.setAttribute('stroke','#5A8AAC');
+      ring.style.animation = 'pcRingDim 3s ease-in-out infinite';
+    } else { ring.setAttribute('stroke','#85B7EB'); ring.style.animation=''; }
+  }
+  if (eyeN) eyeN.style.display = mood==='celebrate' ? 'none' : 'block';
+  if (eyeS) eyeS.style.display = mood==='celebrate' ? 'block' : 'none';
+  if (sweat) sweat.style.display = (mood==='sad'||mood==='wobble') ? 'block' : 'none';
+  if (thought) thought.style.display = mood==='think' ? 'block' : 'none';
+  document.querySelectorAll('.pcBurst').forEach(s => {
+    s.style.opacity = (mood==='celebrate'||mood==='excited') ? '1' : '0';
+    if (mood==='celebrate'||mood==='excited') s.style.animation='pcBurst .8s ease-in-out infinite';
+    else s.style.animation='';
+  });
+  // State label colour
+  const stateEl = document.getElementById('airaState');
+  if (stateEl) {
+    const cols = {happy:'#7BBDFF',think:'#FAC775',excited:'#6ED4B0',celebrate:'#FFD60A',sad:'#FF8888',wobble:'#FF8888'};
+    stateEl.style.color = cols[mood] || '#7BBDFF';
+  }
+}
+
+// Init planet
+document.getElementById('airaplanet').innerHTML = makePlanetPC(80);
+
+// ── QUESTION BANK ─────────────────────────────────────────────────────────────
+const questions = [
+  {
+    id: 1, gear: 1, pts: 4,
+    career: "📰 Journalism",
+    concept: ["role","task"],
+    hint: "A good prompt tells the AI WHO it should be, not just what to do. Think about what role an expert journalist plays.",
+    question: "A student wants to use AI to help research a school project about climate change in India. Which prompt will give the BEST result?",
+    type: "mcq",
+    options: [
+      { letter:"A", text:"Tell me about climate change in India." },
+      { letter:"B", text:"You are a science journalist writing for Class 8 students. Summarise the three most significant effects of climate change on India's monsoon system, using examples from the last 10 years. Write in simple English, under 200 words." },
+      { letter:"C", text:"Climate change India effects monsoon agriculture water." },
+      { letter:"D", text:"What is climate change? Explain everything about it." },
+    ],
+    correct: "B",
+    feedback: {
+      correct: "Exactly right. Option B uses two key prompt engineering elements: <strong>Role</strong> ('science journalist for Class 8 students') and a specific <strong>Task</strong> with clear scope (three effects, monsoon, 10 years, under 200 words). The role tells the AI how to write. The constraints tell it what to include and how long to be.",
+      wrong: "Option B is the strongest prompt. It gives the AI a <strong>Role</strong> (science journalist for Class 8) and a precise <strong>Task</strong> (three effects of climate change on India's monsoon, with examples, under 200 words). Vague prompts like A and D produce vague results. Keywords alone (C) give no structure."
+    }
+  },
+  {
+    id: 2, gear: 1, pts: 4,
+    career: "🎨 Design / Creative",
+    concept: ["format","audience"],
+    hint: "Think about WHO will read this. The same information written for a 5-year-old looks very different from information written for a scientist.",
+    question: "Riya is a student who wants AI to explain how solar panels work. She needs to present this to her Class 6 classmates. Which prompt element is MOST missing from this prompt?\n\n\"Explain how solar panels work.\"",
+    type: "mcq",
+    options: [
+      { letter:"A", text:"It doesn't mention a word limit" },
+      { letter:"B", text:"It doesn't specify the audience — who will be reading or listening to this explanation" },
+      { letter:"C", text:"It doesn't ask for images or diagrams" },
+      { letter:"D", text:"It should include the student's name" },
+    ],
+    correct: "B",
+    feedback: {
+      correct: "Correct. The most critical missing element is <strong>Audience</strong>. \"Explain how solar panels work\" will produce a generic, probably adult-level explanation. Specifying the audience — \"Explain how solar panels work to a Class 6 student who has never studied electricity\" — completely changes the language, examples, and depth the AI uses.",
+      wrong: "The most critical missing element is <strong>Audience</strong> (B). Without knowing who will read this, the AI produces a generic explanation — likely too technical for Class 6. Word limits (A) matter but are secondary. Images (C) require specific tools. The student's name (D) is irrelevant."
+    }
+  },
+  {
+    id: 3, gear: 1, pts: 4,
+    career: "⚖️ Law",
+    concept: ["context","task"],
+    hint: "Context is background information that helps the AI understand the situation. What does the AI need to KNOW before it can help effectively?",
+    question: "A lawyer's assistant wants to use AI to draft a letter to a client. Here are two prompts. Which one will produce a more useful letter, and why?",
+    type: "mcq",
+    scenario: {
+      label: "PROMPT A",
+      text: "Write a letter to my client."
+    },
+    scenario2: {
+      label: "PROMPT B",
+      text: "Write a formal letter to my client Mr. Vikram Mehta informing him that his property dispute case has been adjourned to 15 June 2026 due to the judge's unavailability. The tone should be professional but reassuring. The letter should be under 150 words."
+    },
+    options: [
+      { letter:"A", text:"Prompt A — shorter prompts give AI more creative freedom" },
+      { letter:"B", text:"Both are equal — AI fills in missing details automatically" },
+      { letter:"C", text:"Prompt B — it provides Context (client name, situation, date), Task (inform about adjournment), Format (formal, under 150 words), and Tone (professional but reassuring)" },
+      { letter:"D", text:"Prompt B — but only because it mentions the date" },
+    ],
+    correct: "C",
+    feedback: {
+      correct: "Exactly right. Prompt B layers multiple elements: <strong>Context</strong> (client name, case type, reason for adjournment), <strong>Task</strong> (inform about adjournment), <strong>Format</strong> (under 150 words), and <strong>Tone</strong> (professional but reassuring). Each element shapes the output. Without them, the AI produces a generic letter that needs heavy editing.",
+      wrong: "Prompt B (C) is clearly stronger. It provides <strong>Context</strong> (who, what happened, why), <strong>Task</strong> (inform about adjournment), <strong>Format</strong> (under 150 words, formal), and <strong>Tone</strong> (reassuring). AI doesn't fill in missing details from nothing — it guesses. Better context = less guessing = better output."
+    }
+  },
+  {
+    id: 4, gear: 1, pts: 4,
+    career: "🩺 Medicine",
+    concept: ["constraint","role"],
+    hint: "What happens to an AI response when there are no limits set? Think about length, scope, and focus.",
+    question: "A medical student asks an AI: \"Explain diabetes.\" The AI produces a 2,000-word response covering the history, types, causes, symptoms, treatment, complications, and recent research. The student only needed a brief summary for a class presentation. Which constraint was missing from the prompt?",
+    type: "mcq",
+    options: [
+      { letter:"A", text:"The student should have asked for a different topic" },
+      { letter:"B", text:"The prompt needed a length constraint — for example, 'in under 100 words' or 'in 3 bullet points'" },
+      { letter:"C", text:"The AI made an error — it should have asked how much detail was needed" },
+      { letter:"D", text:"The student should have added their name to the prompt" },
+    ],
+    correct: "B",
+    feedback: {
+      correct: "Correct. Without a <strong>Constraint</strong> on length or scope, AI defaults to comprehensive. Adding 'summarise in under 100 words for a 5-minute class presentation' would have changed everything. Constraints are not restrictions — they are precision tools. The more specific your constraint, the more useful the output.",
+      wrong: "The missing element is a <strong>Constraint</strong> (B). Without telling the AI how long or how detailed the response should be, it produces everything it knows about the topic. 'Summarise in under 100 words' or 'Give me 3 key points for a class presentation' would have scoped the output precisely."
+    }
+  },
+  {
+    id: 5, gear: 2, pts: 10,
+    career: "📸 Film / Creative",
+    concept: ["iteration","format","context"],
+    hint: "Iteration means improving a prompt based on what the AI gives you. The first response is rarely perfect — the skill is in knowing what to ask next.",
+    question: "Read this sequence carefully. A student is using AI to help write a script for a school film about water conservation. Study how the prompts evolve.\n\nWhich change from Prompt 1 to Prompt 2 made the BIGGEST improvement, and why is Prompt 3 an example of effective iteration?",
+    type: "mcq",
+    prompts: [
+      { label: "PROMPT 1", text: "Write a script about water conservation." },
+      { label: "PROMPT 2", text: "Write a 3-minute film script about water conservation in a rural Indian village. The main character is a 12-year-old girl named Priya. The tone should be hopeful, not preachy." },
+      { label: "PROMPT 3", text: "This is good, but Priya's opening scene feels too formal. Can you rewrite just the first scene so she speaks the way a real village child would — using simple, natural dialogue?" },
+    ],
+    options: [
+      { letter:"A", text:"Prompt 2 added a word count. Prompt 3 asks for a complete rewrite." },
+      { letter:"B", text:"Prompt 2 added specificity — character, setting, tone, duration. Prompt 3 is effective iteration because it targets one specific problem without discarding the rest of the work." },
+      { letter:"C", text:"Prompt 2 made the topic narrower. Prompt 3 changes the entire topic." },
+      { letter:"D", text:"Both prompts are equal improvements. Iteration means restarting from scratch each time." },
+    ],
+    correct: "B",
+    feedback: {
+      correct: "Excellent. Prompt 2 transformed a vague instruction into a specific brief — adding <strong>Context</strong> (rural India), <strong>Character</strong> (Priya, 12 years old), <strong>Format</strong> (3-minute script), and <strong>Tone</strong> (hopeful, not preachy). Prompt 3 demonstrates effective <strong>Iteration</strong>: it identifies one specific problem (Priya's dialogue sounds formal), preserves what works, and requests a targeted fix. This is how professionals use AI — not by starting over, but by refining precisely.",
+      wrong: "Prompt 2 improved by adding <strong>Context, Character, Format, and Tone</strong>. Prompt 3 shows effective <strong>Iteration</strong> — it isolates one problem (the dialogue feels formal), preserves everything else, and asks for a targeted fix. Iteration is NOT restarting from scratch — it's surgical improvement. This is how film writers and journalists use AI in real workflow."
+    }
+  },
+  {
+    id: 6, gear: 2, pts: 10,
+    career: "👩‍💼 Business / Entrepreneur",
+    concept: ["role","context","audience","format"],
+    hint: "Sometimes the SAME information needs to be communicated very differently to different audiences. A prompt that works for one reader may fail for another.",
+    question: "Meena runs a small bakery in Pune and wants to use AI to create two different texts from the same information: one for her Instagram post (young customers, fun, casual) and one for a bank loan application (formal, serious, structured). Study the two prompts she tries. Which prompt strategy correctly addresses both needs?",
+    type: "mcq",
+    scenario: {
+      label: "STRATEGY A — One prompt for both",
+      text: "Write about my bakery called Meena's Sweet Corner. It's been open for 3 years, serves 150 customers daily, and makes traditional Maharashtrian sweets and modern fusion desserts."
+    },
+    scenario2: {
+      label: "STRATEGY B — Two targeted prompts",
+      text: "PROMPT 1: You are a social media copywriter. Write a fun, emoji-filled Instagram caption (under 60 words) for Meena's Sweet Corner — a Pune bakery blending traditional Maharashtrian recipes with modern fusion desserts. Tone: warm, celebratory, local pride.\n\nPROMPT 2: You are a business writer. Write a formal 100-word business description of Meena's Sweet Corner for a bank loan application. Include: 3 years operation, 150 daily customers, product range. Tone: professional, credible."
+    },
+    options: [
+      { letter:"A", text:"Strategy A — it's simpler and AI will automatically adjust for each use" },
+      { letter:"B", text:"Strategy B — each prompt assigns a specific Role, Audience, Format, and Tone appropriate for its purpose. The same business, two completely different communication needs." },
+      { letter:"C", text:"Strategy A — you should always keep prompts short" },
+      { letter:"D", text:"Both strategies produce the same result because the content is identical" },
+    ],
+    correct: "B",
+    feedback: {
+      correct: "Correct. Strategy B correctly recognises that the same information must be communicated differently for different <strong>Audiences</strong>. Each prompt assigns a specific <strong>Role</strong> (social media writer vs business writer), <strong>Audience</strong> (Instagram followers vs bank officer), <strong>Format</strong> (under 60 words vs 100-word formal description), and <strong>Tone</strong>. This is real professional prompt engineering — context-appropriate communication for the same underlying content.",
+      wrong: "Strategy B (answer B) is correct. AI does NOT automatically adjust for different audiences without being told — Strategy A produces a generic middle-ground text useful for neither Instagram nor a bank. Each communication context requires its own <strong>Role, Audience, Format, and Tone</strong>. Meena needs two separate, precisely targeted prompts."
+    }
+  },
+  {
+    id: 7, gear: 3, pts: 25,
+    career: "🏥 Healthcare / Any career",
+    concept: ["role","task","context","constraint","audience"],
+    hint: "A strong prompt has a clear Role, a specific Task, relevant Context, Audience, and at least one Constraint. Look for all five in your response.",
+    question: "You are helping a doctor in a rural clinic in Rajasthan. She needs to explain the importance of childhood vaccination to parents in her village. Many parents have low literacy and are skeptical of vaccines.\n\nWrite a prompt that would instruct an AI to generate a helpful explanation for these parents.\n\nYour prompt must include at minimum: Role, Task, Audience, and one Constraint.\nMaximum 60 words.",
+    type: "gear3",
+    keywords: ["doctor","health","rural","parent","vaccine","simple","explain","village","language","short","local","understand","trust","easy","mother","father","hindi","marathi","clear"],
+    maxWords: 60,
+    feedback: {
+      correct: "Strong prompt! You included the key elements that make AI output actually useful for this context. Great work.",
+      partial: "Good attempt. Check that your prompt clearly names the ROLE (who the AI is), the AUDIENCE (low-literacy rural parents), and at least one CONSTRAINT (length, language, or simplicity). A strong constraint for this context would be something like 'in simple language without medical jargon' or 'in under 100 words suitable for verbal explanation.'",
+      weak: "Let's build this up. A strong prompt for this scenario needs: ROLE (e.g. 'You are a rural health worker'), TASK ('explain why childhood vaccination is important'), AUDIENCE ('to parents with low literacy in a Rajasthan village'), CONSTRAINT ('in simple Hindi/Marathi, under 80 words, avoiding medical jargon'). Try again with these elements."
+    }
+  }
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let currentQ = 0;
+let score = 0;
+let xp = 0;
+let hintsUsed = 0;
+let correctCount = 0;
+let answered = false;
+let hintShown = false;
+let selectedOpt = null;
+let g3text = '';
+const results = [];
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+function init() {
+  buildDots();
+  renderQuestion(0);
+}
+
+function buildDots() {
+  const wrap = document.getElementById('qDots');
+  wrap.innerHTML = '';
+  questions.forEach((q, i) => {
+    const d = document.createElement('div');
+    d.className = `q-dot${i === 0 ? ' current' : ''}`;
+    d.id = `dot${i}`;
+    d.onclick = () => { /* navigate only if answered */ };
+    wrap.appendChild(d);
+  });
+}
+
+// ── RENDER QUESTION ───────────────────────────────────────────────────────────
+function renderQuestion(idx) {
+  answered = false;
+  selectedOpt = null;
+  hintShown = false;
+  g3text = '';
+  const q = questions[idx];
+
+  // Dots
+  document.querySelectorAll('.q-dot').forEach((d,i) => {
+    d.classList.remove('current');
+    if (i === idx) d.classList.add('current');
+  });
+
+  // Hide hint / reset buttons
+  document.getElementById('hintBox').style.display = 'none';
+  document.getElementById('hintBtn').style.display = 'block';
+  document.getElementById('submitBtn').style.display = 'block';
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('submitBtn').textContent = q.gear === 3 ? 'Submit My Prompt' : 'Submit Answer';
+
+  let html = `
+    <div class="q-meta">
+      <div class="${q.gear===1?'gear1-tag':q.gear===2?'gear2-tag':'gear3-tag'} gear-tag">GEAR ${q.gear}</div>
+      <span class="q-num">Question ${idx+1} of ${questions.length}</span>
+      <span class="q-pts">${q.pts} pts</span>
+    </div>
+    <div class="career-tag">${q.career}</div>
+    <div class="q-text">${q.question.replace(/\n/g,'<br>')}</div>
+  `;
+
+  // Scenario boxes
+  if (q.scenario) {
+    html += `<div class="scenario-box"><div class="scenario-label">📋 ${q.scenario.label}</div>${q.scenario.text.replace(/\n/g,'<br>')}</div>`;
+  }
+  if (q.scenario2) {
+    html += `<div class="scenario-box" style="border-left-color:var(--green)"><div class="scenario-label" style="color:var(--green)">📋 ${q.scenario2.label}</div>${q.scenario2.text.replace(/\n/g,'<br>')}</div>`;
+  }
+  // Multiple prompts (Q5)
+  if (q.prompts) {
+    q.prompts.forEach((p,i) => {
+      const cols = ['var(--blue)','var(--green)','var(--orange)'];
+      html += `<div class="scenario-box" style="border-left-color:${cols[i]}"><div class="scenario-label" style="color:${cols[i]}">💬 ${p.label}</div><div class="prompt-display">${p.text}</div></div>`;
+    });
+  }
+
+  // Options or Gear 3 input
+  if (q.type === 'mcq') {
+    html += `<div class="options-list" id="optionsList">`;
+    q.options.forEach(o => {
+      html += `<button class="option-btn" data-letter="${o.letter}" onclick="selectOption(this,'${o.letter}')">
+        <div class="opt-letter">${o.letter}</div>
+        <div class="opt-text">${o.text}</div>
+      </button>`;
+    });
+    html += `</div>`;
+  } else {
+    html += `
+      <div class="gear3-input-wrap">
+        <div class="gear3-label">Write your prompt here (max ${q.maxWords} words):</div>
+        <textarea class="gear3-textarea" id="g3input" placeholder="You are a... Your task is to... For... In under ... words..." oninput="onG3Input(this)"></textarea>
+        <div class="word-counter"><span id="wCount">0</span>/${q.maxWords} words</div>
+        <div class="concepts-hint" style="font-size:11px;color:rgba(255,255,255,.3);margin-top:8px">Keywords to include:</div>
+        <div class="keyword-chips" id="kwChips">
+          ${['Role','Task','Audience','Constraint'].map(k=>`<div class="kw-chip" id="kw-${k}">${k}</div>`).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  document.getElementById('qContent').innerHTML = html;
+  document.getElementById('qScroll').scrollTop = 0;
+
+  // Concepts sidebar
+  q.concept.forEach(c => {
+    const el = document.getElementById(`cp-${c}`);
+    if (el) el.classList.add('seen');
+  });
+
+  // AIRA state
+  const states = ['Ready to help','Watching...','Waiting for your answer...'];
+  document.getElementById('airaState').textContent = q.gear === 3 ? 'Thinking...' : 'Ready to help';
+  setPlanetMood('think');
+
+  // AIRA intro message for the question
+  const intros = [
+    "Question 1! This is the most fundamental skill: giving AI a clear **Role** shapes everything about how it responds.",
+    "Think about who will actually READ this content. The audience changes everything — vocabulary, examples, depth.",
+    "Compare these two prompts carefully. What specific elements does Prompt B add that Prompt A is missing?",
+    "Constraints are underused in prompt engineering. Without them, AI tries to be comprehensive — which is rarely what you need.",
+    "This one tests your understanding of **Iteration** — one of the most powerful prompt engineering skills. Read all three prompts before answering.",
+    "Same information, completely different purposes. How does prompt engineering handle this challenge?",
+    "Gear 3! Now YOU write the prompt. I'll check it for the key elements: Role, Task, Audience, and Constraint. Take your time — this is worth 25 points.",
+  ];
+  addAiraMsg(intros[idx] || "Think carefully before answering.", 'normal');
+}
+
+// ── INTERACTIONS ──────────────────────────────────────────────────────────────
+function selectOption(btn, letter) {
+  if (answered) return;
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedOpt = letter;
+  document.getElementById('submitBtn').disabled = false;
+}
+
+function onG3Input(ta) {
+  const words = ta.value.trim().split(/\s+/).filter(w=>w.length>0);
+  const count = words.length;
+  const max = questions[currentQ].maxWords;
+  document.getElementById('wCount').textContent = count;
+  g3text = ta.value;
+
+  // Check keywords
+  const lower = ta.value.toLowerCase();
+  const kwEls = {
+    'Role': lower.includes('you are') || lower.includes('act as') || lower.includes('as a'),
+    'Task': lower.includes('explain') || lower.includes('write') || lower.includes('create') || lower.includes('describe') || lower.includes('tell'),
+    'Audience': lower.includes('parent') || lower.includes('mother') || lower.includes('father') || lower.includes('village') || lower.includes('rural') || lower.includes('low'),
+    'Constraint': lower.includes('word') || lower.includes('short') || lower.includes('simple') || lower.includes('under') || lower.includes('jargon') || lower.includes('easy') || lower.includes('hindi') || lower.includes('marathi'),
+  };
+  Object.entries(kwEls).forEach(([k,found]) => {
+    const el = document.getElementById(`kw-${k}`);
+    if (el) el.classList.toggle('found', found);
+  });
+
+  document.getElementById('submitBtn').disabled = count < 5 || count > max;
+}
+
+function showHint() {
+  const q = questions[currentQ];
+  const box = document.getElementById('hintBox');
+  box.style.display = 'block';
+  box.innerHTML = `💡 <strong>Hint:</strong> ${q.hint}`;
+  document.getElementById('hintBtn').style.display = 'none';
+  if (!hintShown) { hintsUsed++; hintShown = true; }
+  addAiraMsg(`I gave you a hint. Take a moment to re-read the question with that in mind.`, 'tip');
+}
+
+function submitAnswer() {
+  if (answered) return;
+  answered = true;
+  const q = questions[currentQ];
+  document.getElementById('submitBtn').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'block';
+  document.getElementById('hintBtn').style.display = 'none';
+
+  let isCorrect = false;
+  let earnedPts = 0;
+  let fbMsg = '';
+
+  if (q.type === 'mcq') {
+    isCorrect = selectedOpt === q.correct;
+    earnedPts = isCorrect ? q.pts : 0;
+    // Style options
+    document.querySelectorAll('.option-btn').forEach(btn => {
+      btn.disabled = true;
+      const letter = btn.getAttribute('data-letter');
+      if (letter === q.correct) btn.classList.add('correct-ans');
+      else if (letter === selectedOpt && !isCorrect) btn.classList.add('wrong-ans');
+    });
+    fbMsg = isCorrect ? q.feedback.correct : q.feedback.wrong;
+    if (isCorrect) { score += earnedPts; xp += earnedPts + 5; correctCount++; }
+    else { xp += 2; }
+
+    // Dot update
+    document.getElementById(`dot${currentQ}`).classList.add(isCorrect ? 'correct-dot' : 'wrong-dot');
+
+  } else {
+    // Gear 3 scoring
+    const lower = g3text.toLowerCase();
+    const hasRole = lower.includes('you are') || lower.includes('act as') || lower.includes('as a');
+    const hasTask = lower.includes('explain') || lower.includes('describe') || lower.includes('tell') || lower.includes('write');
+    const hasAudience = lower.includes('parent') || lower.includes('mother') || lower.includes('father') || lower.includes('village') || lower.includes('rural') || lower.includes('low literacy');
+    const hasConstraint = lower.includes('word') || lower.includes('short') || lower.includes('simple') || lower.includes('under') || lower.includes('jargon') || lower.includes('easy') || lower.includes('hindi') || lower.includes('marathi') || lower.includes('clear');
+    const wordCount = g3text.trim().split(/\s+/).filter(w=>w.length>0).length;
+    const withinLimit = wordCount <= q.maxWords;
+
+    const elementScore = [hasRole, hasTask, hasAudience, hasConstraint].filter(Boolean).length;
+    earnedPts = withinLimit ? Math.round((elementScore / 4) * 25) : Math.round((elementScore / 4) * 18);
+    score += earnedPts;
+    xp += earnedPts + 3;
+
+    isCorrect = elementScore >= 3;
+    if (elementScore === 4 && withinLimit) {
+      fbMsg = q.feedback.correct;
+      document.getElementById(`dot${currentQ}`).classList.add('correct-dot');
+      correctCount++;
+    } else if (elementScore >= 2) {
+      fbMsg = q.feedback.partial;
+      document.getElementById(`dot${currentQ}`).classList.add(earnedPts > 12 ? 'correct-dot' : 'wrong-dot');
+    } else {
+      fbMsg = q.feedback.weak;
+      document.getElementById(`dot${currentQ}`).classList.add('wrong-dot');
+    }
+
+    // Disable textarea
+    const ta = document.getElementById('g3input');
+    if (ta) { ta.disabled = true; ta.style.opacity = '.6'; }
+  }
+
+  // Update score display
+  document.getElementById('scoreNum').textContent = score;
+
+  // Confidence meter
+  const confPct = Math.round((correctCount / (currentQ + 1)) * 100);
+  document.getElementById('confFill').style.width = confPct + '%';
+  document.getElementById('confPct').textContent = confPct + '%';
+
+  // XP toast
+  if (earnedPts > 0) {
+    const toast = document.getElementById('xpToast');
+    toast.textContent = `+${earnedPts} pts ⚡`;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1800);
+  }
+
+  // AIRA feedback
+  const msgType = isCorrect ? 'correct' : (earnedPts > 0 ? 'tip' : 'wrong');
+  addAiraMsg(fbMsg, msgType);
+  const moodNow = isCorrect ? 'excited' : earnedPts > 0 ? 'think' : 'sad';
+  setPlanetMood(moodNow);
+  setTimeout(() => setPlanetMood('happy'), 2500);
+  document.getElementById('airaState').textContent = isCorrect ? '✅ Correct!' : earnedPts > 0 ? '⚡ Partial' : '❌ Not quite';
+
+  results.push({ q: currentQ, correct: isCorrect, pts: earnedPts });
+}
+
+function nextQuestion() {
+  if (currentQ < questions.length - 1) {
+    currentQ++;
+    renderQuestion(currentQ);
+  } else {
+    showResults();
+  }
+}
+
+function addAiraMsg(text, type = 'normal') {
+  const wrap = document.getElementById('airaMessages');
+  const div = document.createElement('div');
+  div.className = 'aira-msg';
+  const typeClass = type === 'correct' ? 'correct-msg' : type === 'wrong' ? 'wrong-msg' : type === 'tip' ? 'tip-msg' : '';
+  // Convert **bold** markers
+  const formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  div.innerHTML = `<div class="msg-bubble ${typeClass}">${formatted}</div><div class="msg-time">Just now</div>`;
+  wrap.appendChild(div);
+  setTimeout(() => { wrap.scrollTop = wrap.scrollHeight; }, 50);
+}
+
+// ── RESULTS ───────────────────────────────────────────────────────────────────
+function showResults() {
+  const pct = Math.round((score / 70) * 100);
+  let trophy = pct >= 80 ? '🏆' : pct >= 60 ? '⭐' : '💪';
+  let title = pct >= 80 ? 'Excellent Work!' : pct >= 60 ? 'Good Effort!' : 'Keep Practising!';
+
+  const verdicts = {
+    high: "You have a strong command of prompt engineering. You understand Role, Task, Audience, Format, and Constraint — and you can apply them to different professional contexts. You're ready to compete in D1.",
+    mid: "You understand the core concepts but missed some nuances. Focus on the difference between Constraint and Format, and practise writing prompts for different audiences. One more practice run should sharpen this.",
+    low: "Prompt engineering is learnable with practice. The key insight you need: every element you add to a prompt (Role, Audience, Constraint) reduces the AI's guessing. Vague prompts produce vague results. Re-read Module D1 in the study material and try again."
+  };
+
+  document.getElementById('resTrophy').textContent = trophy;
+  document.getElementById('resTitle').textContent = title;
+  document.getElementById('resScore').textContent = score;
+  document.getElementById('rbCorrect').textContent = correctCount;
+  document.getElementById('rbXP').textContent = xp;
+  document.getElementById('rbHints').textContent = hintsUsed;
+  document.getElementById('airaVerdict').textContent = pct >= 70 ? verdicts.high : pct >= 50 ? verdicts.mid : verdicts.low;
+
+  setPlanetMood('celebrate');
+  document.getElementById('resultsOverlay').classList.add('show');
+}
+
+function restartChallenge() {
+  currentQ = 0; score = 0; xp = 0; hintsUsed = 0; correctCount = 0;
+  results.length = 0;
+  document.getElementById('scoreNum').textContent = '0';
+  document.getElementById('confFill').style.width = '0%';
+  document.getElementById('confPct').textContent = '0%';
+  document.getElementById('resultsOverlay').classList.remove('show');
+  document.querySelectorAll('.q-dot').forEach(d => {
+    d.classList.remove('correct-dot','wrong-dot','answered','current');
+  });
+  document.querySelectorAll('.cpill').forEach(p => p.classList.remove('seen'));
+  setPlanetMood('happy');
+  document.getElementById('airaMessages').innerHTML = `
+    <div class="aira-msg">
+      <div class="msg-bubble"><strong>Let's try again!</strong><br><br>Prompt Engineering is a skill that gets sharper with practice. This time, look for the Role, Audience, and Constraint elements in every question.</div>
+      <div class="msg-time">Just now</div>
+    </div>`;
+  init();
+}
+
+// Start
+init();
+</script>
+</body>
+</html>
