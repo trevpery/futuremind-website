@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FutureMind — Preparing Every Young Mind for the World That Is Coming</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+:root{
+  --navy:#0B1D35;
+  --blue:#1760A8;
+  --blue-l:#D9EAFF;
+  --orange:#F0A020;
+  --orange-d:#C07A00;
+  --green:#0C6B50;
+  --coral:#D4500A;
+  --purple:#4A35A8;
+  --teal:#076055;
+  --white:#FFFFFF;
+  --off:#F8F6F2;
+  --warm:#FFFAF4;
+  --mid:#555550;
+  --light:#888880;
+  --border:#E8E4DC;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--white);color:var(--navy);overflow-x:hidden}
+
+/* ── NAV ─────────────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 52px;height:88px;
+  transition:all .4s ease;
+}
+nav.scrolled{
+  background:rgba(255,255,255,0.88);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(0,0,0,.07);
+  height:88px;
+}
+.nav-logo{
+  font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;
+  color:var(--white);text-decoration:none;display:flex;align-items:center;gap:10px;
+  transition:color .3s;
+}
+nav.scrolled .nav-logo{color:var(--navy)}
+.logo-mark{
+  width:30px;height:30px;background:var(--orange);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:600;color:var(--white);letter-spacing:0;
+}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{
+  font-size:16px;font-weight:400;color:rgba(255,255,255,.7);
+  text-decoration:none;transition:color .2s;letter-spacing:.2px;
+}
+nav.scrolled .nav-links a{color:rgba(11,29,53,.6)}
+.nav-links a:hover{color:var(--white)}
+nav.scrolled .nav-links a:hover{color:var(--navy)}
+.nav-cta{
+  font-size:13px;font-weight:600;letter-spacing:.3px;padding:10px 24px;
+  background:var(--orange);color:var(--white);border:none;border-radius:100px;
+  cursor:pointer;transition:all .2s;text-decoration:none;
+}
+.nav-cta:hover{background:#D4880A;transform:translateY(-1px)}
+
+/* ── HERO ─────────────────────────────────────────────── */
+.hero{
+  height:100vh;min-height:680px;position:relative;overflow:hidden;
+  background:
+    linear-gradient(
+    135deg,
+    #071426 0%,
+    #0B1D35 35%,
+    #16375C 100%
+    );
+}
+/* VIDEO SLOT — drop your iStock girl video here */
+.hero-video-wrap{
+  position:absolute;
+  top:0;
+  left:0;
+
+  width:100%;
+  height:100%;
+
+  object-fit:cover;
+
+  object-position:58% center;
+
+  z-index:1;
+
+  filter:brightness(.62) contrast(1.08);
+}
+
+.hero-overlay{
+  position:absolute;
+  inset:0;
+  z-index:2;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.18) 0%,
+      rgba(255,255,255,.08) 35%,
+      rgba(255,255,255,.02) 60%,
+      rgba(255,255,255,.06) 100%
+    );
+}
+
+/* Placeholder gradient when no video loaded */
+.hero-video-placeholder{
+  width:100%;height:100%;
+  background:linear-gradient(135deg,#0B1D35 0%,#153055 40%,#1A3D6B 70%,#0C4A7A 100%);
+}
+/* subtle grid texture */
+.hero-grid{
+  position:absolute;inset:0;z-index:2;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:80px 80px;
+  will-change:transform;
+}
+.hero-content{
+  position:relative;
+  z-index:4;
+
+  max-width:760px;
+
+  margin-left:12vw;
+
+  padding-top:20vh;
+}
+.hero-eyebrow{
+  font-size:18px;letter-spacing:3px;color:var(--orange);font-weight:500;
+  margin-bottom:36px;opacity:0;transform:translateY(16px);
+  display:flex;align-items:center;gap:14px;
+}
+.hero-eyebrow::before{content:'';width:28px;height:1px;background:var(--orange)}
+
+/* STROKE / SEE-THROUGH headline — point 13 */
+.hero-h1{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(62px,8vw,118px);
+  line-height:.88;letter-spacing:2px;
+  margin-bottom:0;opacity:0;transform:translateY(60px);
+  max-width:700px;
+  line-height:.92;
+}
+
+.h1-base{
+  display:block;
+
+  color:#0B1D35;
+
+  position:relative;
+
+  z-index:2;
+
+  mix-blend-mode:screen;
+}
+
+.h1-reactive{
+  color:#0B1D35;
+
+  mix-blend-mode:difference;
+
+  position:relative;
+}
+
+.h1-video{
+  position:absolute;
+
+  top:0;
+  left:0;
+
+  display:block;
+
+  color:transparent;
+
+  background:url('video.mp4') center center / cover no-repeat;
+
+  -webkit-background-clip:text;
+
+  background-clip:text;
+
+  -webkit-text-fill-color:transparent;
+
+  opacity:1;
+
+  z-index:3;
+
+  filter:contrast(1.15) brightness(1.05);
+}
+
+/* "YOUR CHILD'S" — solid white */
+.h1-solid{
+  display:block;
+
+  color:white;
+
+  mix-blend-mode:screen;
+
+  position:relative;
+
+  z-index:5;
+
+  text-shadow:
+    0 0 25px rgba(255,255,255,.08);
+}
+/* "DREAM" — stroke/see-through effect */
+.h1-stroke{
+  display:block;
+
+  color:transparent;
+
+  -webkit-text-stroke:1.2px #0B1D35;
+
+  font-weight:400;
+
+  letter-spacing:2px;
+
+  opacity:.92;
+}
+
+
+
+/* Connecting italic subline — under DREAM */
+.hero-connector{
+  display:block;
+
+  font-family:'Playfair Display',serif;
+
+  font-style:italic;
+
+  font-weight:400;
+
+  font-size:clamp(24px,2.6vw,40px);
+
+  color:rgba(11,29,53,.72);
+
+  line-height:1.25;
+
+  margin-top:18px;
+
+  letter-spacing:.2px;
+}
+
+.hero-sub{
+  font-size:16px;color:rgba(255,255,255,.55);font-weight:300;line-height:1.75;
+  max-width:480px;margin:36px 0 48px;opacity:0;transform:translateY(20px);
+}
+.hero-ctas{display:flex;gap:14px;opacity:0;transform:translateY(20px)}
+.btn-primary{
+  padding:14px 32px;background:var(--orange);color:var(--white);font-size:13px;
+  font-weight:600;letter-spacing:.3px;border:none;border-radius:100px;cursor:pointer;
+  transition:all .25s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;
+}
+.btn-primary:hover{background:#D4880A;transform:translateY(-2px)}
+.btn-outline{
+  padding:14px 32px;background:transparent;color:var(--white);font-size:13px;font-weight:400;
+  border:1px solid rgba(255,255,255,.35);border-radius:100px;cursor:pointer;
+  transition:all .25s;text-decoration:none;
+}
+.btn-outline:hover{border-color:rgba(255,255,255,.8);background:rgba(255,255,255,.06)}
+.hero-scroll{
+  position:absolute;bottom:36px;left:52px;z-index:3;
+  display:flex;align-items:center;gap:12px;opacity:0;
+}
+.scroll-line{width:40px;height:1px;background:rgba(255,255,255,.3);
+  position:relative;overflow:hidden;}
+.scroll-line::after{
+  content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:var(--orange);animation:scrollPulse 2s ease-in-out infinite;
+}
+@keyframes scrollPulse{0%{left:-100%}100%{left:100%}}
+.scroll-label{font-size:10px;letter-spacing:4px;color:rgba(255,255,255,.3);font-weight:300}
+
+/* ── BELIEF ──────────────────────────────────────────── */
+.belief{background:var(--off);padding:140px 52px;position:relative;overflow:hidden}
+.belief-orb-1{
+  position:absolute;top:-15%;right:-10%;width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(240,160,32,.08) 0%,transparent 70%);
+  pointer-events:none;will-change:transform;
+}
+.belief-orb-2{
+  position:absolute;bottom:-20%;left:-8%;width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(23,96,168,.07) 0%,transparent 70%);
+  pointer-events:none;will-change:transform;
+}
+.belief-inner{max-width:1080px;margin:0 auto;position:relative;z-index:2}
+.section-tag{
+  font-size:16px;letter-spacing:3px;color:var(--orange);font-weight:600;
+  margin-bottom:48px;display:flex;align-items:center;gap:14px;
+}
+.section-tag::before{content:'';width:28px;height:1px;background:var(--orange)}
+.belief-headline{
+  font-family:'Playfair Display',serif;font-style:italic;
+  font-size:clamp(36px,5vw,64px);line-height:1.15;color:var(--navy);
+  margin-bottom:64px;
+}
+.belief-headline .hl{
+  font-style:normal;font-family:'Bebas Neue',sans-serif;
+  font-size:1.15em;color:var(--orange);letter-spacing:2px;display:block;margin-top:32px;
+  line-height:.95;
+}
+.careers-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  border-top:1px solid var(--border);margin-bottom:72px;
+}
+.career-item{
+  padding:32px 28px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);
+  position:relative;overflow:hidden;transition:background .3s;
+}
+.career-item:nth-child(3n){border-right:none}
+.career-item:hover{background:var(--white)}
+.career-num{font-size:11px;color:var(--orange);font-weight:600;margin-bottom:10px;letter-spacing:1px}
+.career-role{font-size:13px;color:var(--mid);font-weight:300;line-height:1.65}
+.career-role strong{display:block;color:var(--navy);font-size:15px;font-weight:600;margin-bottom:4px}
+.belief-bottom{
+  display:grid;grid-template-columns:1fr 1fr;gap:52px;
+  padding-top:52px;border-top:1px solid var(--border);
+}
+.bq{font-size:clamp(20px,2.5vw,28px);color:rgba(11,29,53,.35);font-weight:300;line-height:1.45}
+.bq strong{display:block;color:var(--navy);font-weight:500;margin-top:8px;font-size:1em}
+.ba{font-size:15px;color:var(--mid);font-weight:300;line-height:1.8}
+
+/* ── DIMENSIONS — 3+3 slide ──────────────────────────── */
+.dim-section{
+  background:var(--white);padding:120px 0 80px;position:relative;overflow:hidden;
+}
+.dim-bg-wash{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,var(--off) 0%,var(--white) 30%,var(--white) 70%,var(--off) 100%);
+  pointer-events:none;
+}
+.dim-header{
+  padding:0 52px 56px;
+  display:flex;justify-content:space-between;align-items:flex-end;
+  position:relative;z-index:2;
+}
+.dim-h-left .section-tag{margin-bottom:8px}
+.dim-sub{font-size:14px;color:var(--mid);font-weight:300;max-width:420px;line-height:1.6}
+/* Progress dots */
+.dim-dots{display:flex;gap:8px;align-items:center}
+.dim-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--border);transition:all .4s ease;cursor:pointer;
+}
+.dim-dot.active{background:var(--orange);transform:scale(1.4)}
+
+/* Track — shows 3 cards at once, slides to show next 3 */
+.dim-track-wrap{
+  position:relative;
+
+  overflow:hidden;
+
+  width:100%;
+
+  padding:40px 52px 60px;
+}
+
+.dim-slider{
+  display:grid;
+
+  grid-template-columns:repeat(6, minmax(0, 1fr));
+
+  gap:20px;
+
+  width:200%;
+
+  transition:transform .7s cubic-bezier(.25,.46,.45,.94);
+
+  will-change:transform;
+}
+
+
+.dim-card{
+  border-radius:20px;padding:40px 36px 36px;
+  position:relative;
+  overflow:visible;
+  border:1px solid rgba(255,255,255,.6);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  transition:transform .35s ease,box-shadow .35s ease;
+  cursor:default;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+}
+.dim-card:hover{transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,.1)}
+/* colour tints per card */
+.dim-card:nth-child(1){background:rgba(23,96,168,.08);box-shadow:0 4px 32px rgba(23,96,168,.08)}
+.dim-card:nth-child(2){background:rgba(12,107,80,.08);box-shadow:0 4px 32px rgba(12,107,80,.08)}
+.dim-card:nth-child(3){background:rgba(212,80,10,.08);box-shadow:0 4px 32px rgba(212,80,10,.08)}
+.dim-card:nth-child(4){background:rgba(74,53,168,.08);box-shadow:0 4px 32px rgba(74,53,168,.08)}
+.dim-card:nth-child(5){background:rgba(192,122,0,.08);box-shadow:0 4px 32px rgba(192,122,0,.08)}
+.dim-card:nth-child(6){background:rgba(7,96,85,.08);box-shadow:0 4px 32px rgba(7,96,85,.08)}
+
+/* Accent top bar */
+.dim-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:20px 20px 0 0;
+}
+.dim-card:nth-child(1)::before{background:var(--blue)}
+.dim-card:nth-child(2)::before{background:var(--green)}
+.dim-card:nth-child(3)::before{background:var(--coral)}
+.dim-card:nth-child(4)::before{background:var(--purple)}
+.dim-card:nth-child(5)::before{background:var(--orange)}
+.dim-card:nth-child(6)::before{background:var(--teal)}
+
+/* SVG icon area — animated */
+.dim-icon{
+  width:56px;height:56px;margin-bottom:24px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:14px;position:relative;
+}
+.dim-card:nth-child(1) .dim-icon{background:rgba(23,96,168,.15)}
+.dim-card:nth-child(2) .dim-icon{background:rgba(12,107,80,.15)}
+.dim-card:nth-child(3) .dim-icon{background:rgba(212,80,10,.15)}
+.dim-card:nth-child(4) .dim-icon{background:rgba(74,53,168,.15)}
+.dim-card:nth-child(5) .dim-icon{background:rgba(192,122,0,.15)}
+.dim-card:nth-child(6) .dim-icon{background:rgba(7,96,85,.15)}
+
+.dim-icon svg{width:28px;height:28px;transition:transform .3s ease}
+.dim-card:hover .dim-icon svg{transform:scale(1.15) rotate(5deg)}
+
+.dim-card-num{font-size:11px;font-weight:600;letter-spacing:2px;margin-bottom:12px}
+.dim-card:nth-child(1) .dim-card-num{color:var(--blue)}
+.dim-card:nth-child(2) .dim-card-num{color:var(--green)}
+.dim-card:nth-child(3) .dim-card-num{color:var(--coral)}
+.dim-card:nth-child(4) .dim-card-num{color:var(--purple)}
+.dim-card:nth-child(5) .dim-card-num{color:var(--orange-d)}
+.dim-card:nth-child(6) .dim-card-num{color:var(--teal)}
+
+.dim-card-name{font-size:20px;font-weight:600;color:var(--navy);margin-bottom:14px;line-height:1.2}
+.dim-card-desc{font-size:13px;color:var(--mid);font-weight:300;line-height:1.7;margin-bottom:24px}
+.dim-card-career{
+  font-size:12px;color:var(--light);font-weight:300;font-style:italic;
+  padding-top:20px;border-top:1px solid rgba(0,0,0,.06);line-height:1.55;
+}
+/* slide nav arrows */
+.dim-nav{
+  display:flex;gap:10px;padding:40px 52px 0;position:relative;z-index:2;
+}
+.dim-arrow{
+  width:44px;height:44px;border-radius:50%;border:1.5px solid var(--border);
+  background:var(--white);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .25s;font-size:16px;color:var(--mid);
+}
+.dim-arrow:hover{border-color:var(--navy);background:var(--navy);color:var(--white)}
+.dim-arrow:disabled{opacity:.3;pointer-events:none}
+
+/* progress bar */
+.dim-progress{
+  margin:24px 52px 0;height:2px;background:var(--border);border-radius:1px;overflow:hidden;
+}
+.dim-progress-fill{
+  height:100%;width:50%;background:var(--orange);border-radius:1px;
+  transition:width .7s cubic-bezier(.25,.46,.45,.94);
+}
+
+/* ── COMPETITION ─────────────────────────────────────── */
+.competition{background:var(--navy);padding:140px 52px;position:relative;overflow:hidden}
+.comp-orb{
+  position:absolute;top:-20%;right:-15%;width:700px;height:700px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(23,96,168,.25) 0%,transparent 65%);
+  pointer-events:none;will-change:transform;
+}
+.comp-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
+  background-size:100px 100px;pointer-events:none;will-change:transform;
+}
+.comp-inner{max-width:1080px;margin:0 auto;position:relative;z-index:2}
+.section-tag-light{
+  font-size:16px;letter-spacing:3px;color:var(--orange);font-weight:600;
+  margin-bottom:48px;display:flex;align-items:center;gap:14px;
+}
+.section-tag-light::before{content:'';width:28px;height:1px;background:var(--orange)}
+.comp-headline{
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,7.5vw,104px);
+  line-height:.88;letter-spacing:1px;color:var(--white);margin-bottom:80px;
+}
+.comp-headline span{color:var(--orange)}
+/* Three stages only — point 8 */
+.stages-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:80px}
+.stage-item{
+  padding:48px 36px;background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+  transition:background .3s;
+}
+.stage-item:hover{background:rgba(255,255,255,.06)}
+.stage-num{
+  font-family:'Bebas Neue',sans-serif;font-size:72px;line-height:.9;
+  color:rgba(255,255,255,.06);margin-bottom:20px;letter-spacing:2px;
+}
+.stage-name{font-size:17px;font-weight:600;color:var(--white);margin-bottom:12px}
+.stage-detail{font-size:13px;color:rgba(255,255,255,.45);font-weight:300;line-height:1.7;margin-bottom:20px}
+.stage-badge{
+  display:inline-flex;align-items:center;gap:6px;font-size:11px;
+  font-weight:600;padding:5px 14px;border-radius:100px;
+}
+.sb-1{background:rgba(23,96,168,.3);color:#7BBDFF}
+.sb-2{background:rgba(12,107,80,.3);color:#6ED4B0}
+.sb-3{background:rgba(240,160,32,.2);color:var(--orange)}
+
+/* certificate */
+.cert-callout{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;padding:52px;
+  display:grid;grid-template-columns:1fr 280px;gap:52px;align-items:center;
+}
+.cc-tag{font-size:10px;letter-spacing:3px;color:var(--orange);font-weight:600;margin-bottom:16px}
+.cc-h{
+  font-family:'Playfair Display',serif;font-style:italic;
+  font-size:clamp(24px,3vw,36px);color:var(--white);line-height:1.25;margin-bottom:14px;
+}
+.cc-body{font-size:14px;color:rgba(255,255,255,.45);font-weight:300;line-height:1.8}
+.cert-mock{
+  background:var(--white);border-radius:14px;padding:24px;
+}
+.cert-top{font-size:9px;letter-spacing:2px;color:var(--light);margin-bottom:12px}
+.cert-name{font-family:'Playfair Display',serif;font-size:20px;color:var(--navy);margin-bottom:4px;font-style:italic}
+.cert-school{font-size:11px;color:var(--light);margin-bottom:14px}
+.cert-rank{font-size:13px;font-weight:600;color:var(--orange-d);margin-bottom:4px}
+.cert-str{font-size:11px;color:var(--light);font-style:italic;margin-bottom:14px;line-height:1.4}
+.cert-bars{display:flex;flex-direction:column;gap:5px}
+.cb-row{display:flex;align-items:center;gap:7px}
+.cb-lbl{font-size:9px;color:var(--light);width:22px}
+.cb-track{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.cb-fill{height:100%;border-radius:2px}
+.cb-sc{font-size:9px;color:var(--light);min-width:22px;text-align:right}
+
+/* ── FOR PARENTS ─────────────────────────────────────── */
+.for-parents{background:var(--warm);padding:140px 52px;position:relative;overflow:hidden}
+.fp-orb-1{
+  position:absolute;top:-15%;left:-8%;width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(240,160,32,.07) 0%,transparent 65%);
+  pointer-events:none;will-change:transform;
+}
+.fp-orb-2{
+  position:absolute;bottom:-20%;right:-8%;width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(23,96,168,.06) 0%,transparent 65%);
+  pointer-events:none;will-change:transform;
+}
+.fp-inner{max-width:1080px;margin:0 auto;position:relative;z-index:2}
+.fp-top{display:grid;grid-template-columns:1fr 1fr;gap:80px;margin-bottom:80px;align-items:start}
+.fp-left{}
+.fp-headline{
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,7vw,92px);
+  line-height:.88;letter-spacing:1px;color:var(--navy);margin:16px 0 24px;
+}
+.fp-sub{font-size:15px;color:var(--mid);font-weight:300;line-height:1.8;margin-bottom:36px}
+.fp-stats{display:flex;gap:36px;margin-bottom:36px}
+.fp-stat-n{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--orange);line-height:1;letter-spacing:1px}
+.fp-stat-l{font-size:11px;color:var(--light);font-weight:300;margin-top:2px}
+.fp-right{display:flex;flex-direction:column;gap:0}
+.fp-item{
+  padding:32px 0;border-bottom:1px solid var(--border);
+  display:grid;grid-template-columns:36px 1fr;gap:18px;align-items:start;
+}
+.fp-item:first-child{padding-top:0}
+.fp-item-num{font-size:11px;color:var(--orange);font-weight:600;letter-spacing:1px;padding-top:3px}
+.fp-item-h{font-size:15px;font-weight:600;color:var(--navy);margin-bottom:8px}
+.fp-item-body{font-size:13px;color:var(--mid);font-weight:300;line-height:1.72}
+/* Kit grid */
+.kit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px;padding-top:24px;border-top:1px solid var(--border)}
+.kit-card{padding:14px;background:var(--white);border:1px solid var(--border);border-radius:10px}
+.kit-card-name{font-size:12px;font-weight:600;color:var(--orange-d);margin-bottom:4px}
+.kit-card-desc{font-size:11px;color:var(--light);font-weight:300;line-height:1.5}
+
+/* ── FOR SCHOOLS ─────────────────────────────────────── */
+.for-schools{background:var(--off);padding:90px 52px 60px;position:relative;overflow:hidden}
+.fs-orb{
+  position:absolute;top:-15%;right:-10%;width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(23,96,168,.06) 0%,transparent 65%);
+  pointer-events:none;will-change:transform;
+}
+.fs-inner{
+  max-width:1320px;
+
+  margin:0 auto;
+
+  position:relative;
+
+  z-index:2;
+}
+.fs-top{display:grid;grid-template-columns:1fr 1fr;gap:80px;margin-bottom:72px;align-items:start}
+.fs-headline{
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,7vw,92px);
+  line-height:.88;letter-spacing:1px;color:var(--navy);
+}
+.fs-headline span{color:var(--blue)}
+.fs-desc p{font-size:15px;color:var(--mid);font-weight:300;line-height:1.8;margin-bottom:24px}
+.school-benefits{
+  display:grid;
+
+  grid-template-columns:repeat(3,minmax(320px,1fr));
+
+  gap:28px;
+
+  width:100%;
+
+  position:relative;
+
+  z-index:5;
+
+  margin-top:48px;
+
+  margin-bottom:72px;
+}
+.benefit-card{
+  position:relative;
+
+  z-index:2;
+
+  padding:36px 28px;
+
+  background:#ffffff;
+
+  border:1px solid #E6E0D8;
+
+  min-height:260px;
+
+  display:flex;
+
+  flex-direction:column;
+
+  justify-content:flex-start;
+
+  opacity:1 !important;
+
+  visibility:visible !important;
+
+  transform:none !important;
+}
+.benefit-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:var(--blue);transform:scaleX(0);transition:transform .4s ease;transform-origin:left;
+}
+.benefit-card:hover::after{transform:scaleX(1)}
+.benefit-card:hover{background:var(--blue-l)}
+.benefit-icon{font-size:24px;margin-bottom:16px}
+.benefit-title{font-size:15px;font-weight:600;color:var(--navy);margin-bottom:8px}
+.benefit-desc{font-size:13px;color:var(--mid);font-weight:300;line-height:1.65}
+/* commit — school fee point 11 */
+.commit-strip{
+  background:var(--navy);border-radius:20px;padding:52px;
+  display:grid;grid-template-columns:1fr auto;gap:52px;align-items:center;
+}
+.commit-h{
+  font-family:'Playfair Display',serif;font-style:italic;
+  font-size:26px;color:var(--white);margin-bottom:12px;
+}
+.commit-body{font-size:14px;color:rgba(255,255,255,.45);font-weight:300;line-height:1.75;margin-bottom:20px}
+.fee-pills{display:flex;gap:10px;flex-wrap:wrap}
+.fee-pill{
+  padding:7px 16px;background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);border-radius:100px;font-size:12px;color:rgba(255,255,255,.55);
+}
+.fee-pill span{color:var(--orange);font-weight:600}
+.commit-right{display:flex;flex-direction:column;gap:12px;min-width:240px}
+.commit-item{display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,.55);font-weight:300}
+.commit-dot{width:6px;height:6px;border-radius:50%;background:var(--orange);flex-shrink:0}
+
+/* ── CURRICULUM CALLOUT ──────────────────────────────── */
+.curriculum{background:var(--blue);padding:80px 52px;position:relative;overflow:hidden}
+.curr-inner{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.curr-tag{font-size:16px;letter-spacing:3px;color:rgba(255,255,255,.5);font-weight:600;margin-bottom:16px}
+.curr-h{
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5vw,64px);
+  line-height:.9;letter-spacing:1px;color:var(--white);margin-bottom:16px;
+}
+.curr-body{font-size:14px;color:rgba(255,255,255,.65);font-weight:300;line-height:1.8}
+.curr-right{display:flex;flex-direction:column;gap:12px}
+.curr-item{
+  display:flex;gap:14px;align-items:flex-start;
+  padding:18px;background:rgba(255,255,255,.08);border-radius:10px;
+  border:1px solid rgba(255,255,255,.1);
+}
+.curr-check{
+  width:22px;height:22px;border-radius:50%;background:var(--orange);
+  display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--white);
+  flex-shrink:0;margin-top:1px;
+}
+.curr-item-text{font-size:13px;color:rgba(255,255,255,.75);font-weight:300;line-height:1.6}
+.curr-item-text strong{color:var(--white);font-weight:600;display:block;margin-bottom:2px}
+
+/* ── FINAL CTA ───────────────────────────────────────── */
+.final{
+  background:var(--navy);padding:160px 52px;
+  position:relative;overflow:hidden;text-align:center;
+}
+.final-orb{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:800px;height:800px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(23,96,168,.2) 0%,transparent 65%);
+  pointer-events:none;
+}
+.final-inner{position:relative;z-index:2;max-width:700px;margin:0 auto}
+.final-h{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(64px,11vw,148px);line-height:.86;letter-spacing:2px;
+  color:var(--white);margin-bottom:24px;
+}
+.final-h span{color:var(--orange)}
+.final-sub{font-size:16px;color:rgba(255,255,255,.45);font-weight:300;line-height:1.75;margin-bottom:48px}
+.final-ctas{display:flex;gap:14px;justify-content:center;margin-bottom:32px}
+.final-note{font-size:12px;color:rgba(255,255,255,.2);font-weight:300}
+.demo-buttons{
+  margin-top:28px;
+  display:flex;
+  gap:14px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+/* ── FOOTER ──────────────────────────────────────────── */
+footer{background:var(--navy);border-top:1px solid rgba(255,255,255,.05);padding:64px 52px 36px}
+.footer-inner{max-width:1080px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px}
+.footer-logo{
+  font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;
+  color:var(--white);margin-bottom:12px;display:flex;align-items:center;gap:8px;
+}
+.footer-tag{font-size:13px;color:rgba(255,255,255,.25);font-weight:300;font-style:italic;line-height:1.65;margin-bottom:18px;max-width:260px}
+.footer-email{font-size:12px;color:rgba(255,255,255,.2);margin-bottom:3px}
+.footer-nav-h{font-size:14px;letter-spacing:2px;color:rgba(255,255,255,.2);margin-bottom:16px;font-weight:600}
+.footer-links{display:flex;flex-direction:column;gap:9px}
+.footer-links a{font-size:13px;color:rgba(255,255,255,.38);text-decoration:none;font-weight:300;transition:color .2s}
+.footer-links a:hover{color:var(--white)}
+.footer-bottom{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-top:28px;border-top:1px solid rgba(255,255,255,.04);
+  font-size:11px;color:rgba(255,255,255,.15);font-weight:300;
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a class="nav-logo" href="#"><div class="logo-mark">FM</div>FUTUREMIND</a>
+  <ul class="nav-links">
+    <li><a href="#belief">The Idea</a></li>
+    <li><a href="#dimensions">Six Dimensions</a></li>
+    <li><a href="#parents">For Parents</a></li>
+    <li><a href="#schools">For Schools</a></li>
+    <li><a href="#curriculum">Why Now</a></li>
+  </ul>
+  <a href="#parents" class="nav-cta">Register</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <!-- VIDEO SLOT: Replace the div below with a <video> tag pointing to your iStock girl video -->
+  <!-- <video class="hero-video-wrap" autoplay muted loop playsinline>
+    <source src="video.mp4" type="video/mp4">
+  </video> -->
+ 
+  <video class="hero-video-wrap" autoplay muted loop playsinline>
+    <source src="video.mp4" type="video/mp4">
+  </video>
+
+  <div class="hero-overlay"></div>
+
+  <div class="hero-grid" id="hGrid"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow" id="eyebrow">FUTUREMIND AI CHALLENGE &nbsp;·&nbsp; INDIA &nbsp;·&nbsp; 2026</p>
+    <h1 class="hero-h1" id="h1">
+
+      <span class="h1-base">
+        YOUR CHIL<span class="h1-reactive">D'S</span>
+      </span>
+
+      <span class="h1-video">YOUR CHILD'S</span>
+
+      <span class="h1-stroke">DREAM</span>
+
+      <p class="hero-connector">
+        deserves a future-ready mind.
+      </p>
+
+    </h1>
+    <p class="hero-sub" id="hsub">India's only AI literacy competition that tests how students think about AI — not what they know about it. No coding. No projects. Built for every career, every dream.</p>
+    <div class="hero-ctas" id="hctas">
+      <a href="#parents" class="btn-primary">I am a parent</a>
+      <a href="#schools" class="btn-outline">I represent a school</a>
+    </div>
+  </div>
+  <div class="hero-scroll" id="hscroll">
+    <div class="scroll-line"></div>
+    <span class="scroll-label">SCROLL</span>
+  </div>
+
+  
+</section>
+
+
+<!-- BELIEF -->
+<section class="belief" id="belief">
+  <div class="belief-orb-1" id="bOrb1"></div>
+  <div class="belief-orb-2" id="bOrb2"></div>
+  <div class="belief-inner">
+    <div class="section-tag">THE CORE BELIEF</div>
+    <div class="belief-headline">
+      AI is not a subject.<br>It is the new environment in which
+      <span class="hl">EVERY DREAM WILL UNFOLD.</span>
+    </div>
+    <div class="careers-grid">
+      <div class="career-item"><div class="career-num">01</div><div class="career-role"><strong>The Surgeon</strong>will work with AI diagnostics every single day.</div></div>
+      <div class="career-item"><div class="career-num">02</div><div class="career-role"><strong>The Journalist</strong>will rely on AI research tools — and must know when it's wrong.</div></div>
+      <div class="career-item"><div class="career-num">03</div><div class="career-role"><strong>The Farmer</strong>will use AI to predict yield, weather, and market prices.</div></div>
+      <div class="career-item"><div class="career-num">04</div><div class="career-role"><strong>The Architect</strong>will collaborate with generative AI on every design.</div></div>
+      <div class="career-item"><div class="career-num">05</div><div class="career-role"><strong>The Filmmaker</strong>will direct AI creative tools — vision must stay human.</div></div>
+      <div class="career-item"><div class="career-num">06</div><div class="career-role"><strong>The Policymaker</strong>will shape the laws that govern AI systems.</div></div>
+    </div>
+    <div class="belief-bottom">
+      <div class="bq">The question is not whether AI will affect your child's chosen field.<strong>The question is whether your child will be ready when it does.</strong></div>
+      <div class="ba">FutureMind builds the thinking skills that matter in every field — tested through scenarios from real careers, recognised on a national stage. Your child's dream doesn't need to change. Whether they study under CBSE, ICSE, IB, Cambridge, or a State Board — the skills they need to thrive in an AI-shaped world are the same.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SIX DIMENSIONS — 3+3 slide -->
+<section class="dim-section" id="dimensions">
+  <div class="dim-bg-wash"></div>
+  <div class="dim-header">
+    <div class="dim-h-left">
+      <div class="section-tag">SIX DIMENSIONS</div>
+      <div class="dim-sub">Not technology skills — thinking skills that matter in every career.</div>
+    </div>
+    <div class="dim-dots">
+      <div class="dim-dot active" onclick="slideDim(0)"></div>
+      <div class="dim-dot" onclick="slideDim(1)"></div>
+    </div>
+  </div>
+  <div class="dim-track-wrap">
+    <div class="dim-slider" id="dimSlider">
+
+      <!-- Card 1 -->
+      <div class="dim-card">
+        <div class="dim-icon">
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="7" width="22" height="14" rx="3" stroke="#1760A8" stroke-width="1.8"/>
+            <path d="M8 12h3M8 16h7" stroke="#1760A8" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="20" cy="14" r="2.5" stroke="#1760A8" stroke-width="1.6"/>
+          </svg>
+        </div>
+        <div class="dim-card-num">DIMENSION 01</div>
+        <div class="dim-card-name">Prompt Engineering</div>
+        <div class="dim-card-desc">Can the student communicate precisely with AI to get the best output? The sharper the instruction, the more powerful the tool — and this skill transfers to every job.</div>
+        <div class="dim-card-career">A journalist prompting AI to research a breaking story under deadline pressure.</div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="dim-card">
+        <div class="dim-icon">
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 3L4 8v7c0 5.5 4.3 10.1 10 11 5.7-.9 10-5.5 10-11V8L14 3z" stroke="#0C6B50" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M10 14l3 3 5-5" stroke="#0C6B50" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="dim-card-num">DIMENSION 02</div>
+        <div class="dim-card-name">AI Safety & Ethics</div>
+        <div class="dim-card-desc">Does the student understand responsibility, privacy, and the limits of ethical AI use? When AI causes harm, someone must be accountable — and understanding that is a critical life skill.</div>
+        <div class="dim-card-career">A lawyer understanding AI evidence admissibility and data privacy in court.</div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="dim-card">
+        <div class="dim-icon">
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="14" cy="14" r="10" stroke="#D4500A" stroke-width="1.8"/>
+            <path d="M14 10v5" stroke="#D4500A" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="14" cy="18.5" r="1" fill="#D4500A"/>
+            <path d="M9 9l10 10M19 9L9 19" stroke="#D4500A" stroke-width="1.4" stroke-linecap="round" opacity=".35"/>
+          </svg>
+        </div>
+        <div class="dim-card-num">DIMENSION 03</div>
+        <div class="dim-card-name">Spotting Hallucinations & Bias</div>
+        <div class="dim-card-desc">Can the student identify when AI is wrong, misleading, or systematically unfair? Confidence in AI output is not the same as accuracy — and the difference matters enormously.</div>
+        <div class="dim-card-career">A doctor questioning an AI diagnostic before it becomes a treatment decision.</div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="dim-card">
+        <div class="dim-icon">
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="14" cy="14" r="10" stroke="#4A35A8" stroke-width="1.8"/>
+            <path d="M9 14c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5" stroke="#4A35A8" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="14" cy="14" r="2" fill="#4A35A8"/>
+            <path d="M4 14h2M22 14h2" stroke="#4A35A8" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="dim-card-num">DIMENSION 04</div>
+        <div class="dim-card-name">AI in the Real World</div>
+        <div class="dim-card-desc">Does the student see how AI is already reshaping industries and jobs? Seven types of AI — and the specific type changing their chosen field right now, today.</div>
+        <div class="dim-card-career">A farmer understanding AI-driven crop prediction, pest detection, and market tools.</div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="dim-card">
+        <div class="dim-icon">
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 4c0 0-8 4-8 10s8 10 8 10 8-4 8-10S14 4 14 4z" stroke="#C07A00" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M10 14c1-2 2-3 4-3s3 1 4 3" stroke="#C07A00" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="14" cy="11" r="1.5" fill="#C07A00"/>
+          </svg>
+        </div>
+        <div class="dim-card-num">DIMENSION 05</div>
+        <div class="dim-card-name">Creative Use of AI</div>
+        <div class="dim-card-desc">Can the student use AI as a genuine creative partner — not just a shortcut? The vision must be human. The cultural knowledge must be human. The judgment must be human.</div>
+        <div class="dim-card-career">A designer collaborating with generative AI on a culturally authentic campaign.</div>
+      </div>
+
+      <!-- Card 6 -->
+      <div class="dim-card">
+        <div class="dim-icon">
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 22L14 6l8 16" stroke="#076055" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8.5 17h11" stroke="#076055" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="20" cy="8" r="3" stroke="#076055" stroke-width="1.6"/>
+            <path d="M20 5v1.5M20 9.5V11" stroke="#076055" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="dim-card-num">DIMENSION 06</div>
+        <div class="dim-card-name">Future of AI</div>
+        <div class="dim-card-desc">Does the student understand how AI evolved — from rule-based to ML to Transformers to RAG to Agentic AI — and the four questions that evaluate any AI system?</div>
+        <div class="dim-card-career">A policymaker shaping the regulations that govern AI at national scale.</div>
+      </div>
+
+    </div>
+  </div>
+  <div class="dim-nav">
+    <button class="dim-arrow" id="dimPrev" onclick="slideDim(0)" disabled>←</button>
+    <button class="dim-arrow" id="dimNext" onclick="slideDim(1)">→</button>
+  </div>
+  <div class="dim-progress"><div class="dim-progress-fill" id="dimFill"></div></div>
+</section>
+
+<!-- COMPETITION -->
+<section class="competition" id="competition">
+  <div class="comp-orb" id="compOrb"></div>
+  <div class="comp-grid" id="compGrid"></div>
+  <div class="comp-inner">
+    <div class="section-tag-light">THE COMPETITION</div>
+    <h2 class="comp-headline">FROM YOUR<br><span>SCHOOL</span><br>TO NATIONAL STAGE.</h2>
+    <div class="stages-grid">
+      <div class="stage-item">
+        <div class="stage-num">01</div>
+        <div class="stage-name">School Round</div>
+        <div class="stage-detail">Online. Self-administered. All registered students. 60 minutes. 600 points. Scenario-based — genuine thinking, not memorisation. Questions randomised from a large bank.</div>
+        <span class="stage-badge sb-1">Top 20% qualify</span>
+      </div>
+      <div class="stage-item">
+        <div class="stage-num">02</div>
+        <div class="stage-name">City Round</div>
+        <div class="stage-detail">Online. Timed. Proctored. Only the top performers from each school in your city compete. Harder questions. Stricter environment. Live leaderboard within the city.</div>
+        <span class="stage-badge sb-2">Top 10% qualify</span>
+      </div>
+      <div class="stage-item">
+        <div class="stage-num">03</div>
+        <div class="stage-name">National Round</div>
+        <div class="stage-detail">Online. Fully proctored. National live leaderboard. The top students in India compete for the highest national ranking. Results determine the final certificate percentile.</div>
+        <span class="stage-badge sb-3">National champions</span>
+      </div>
+    </div>
+    <div class="cert-callout">
+      <div>
+        <div class="cc-tag">THE RANKED CERTIFICATE</div>
+        <div class="cc-h">Not a participation trophy.<br>A specific record of how your child thinks.</div>
+        <div class="cc-body">Every participating student receives a personalised ranked certificate showing their national percentile, their score across all six dimensions, and the specific dimension where they demonstrated exceptional strength. Not "Participant" — "Top 8%, exceptional strength in Spotting AI Errors." That is the certificate that belongs on a college application.</div>
+      </div>
+      <div class="cert-mock">
+        <div class="cert-top">FUTUREMIND AI CHALLENGE · 2026</div>
+        <div class="cert-name">Aryan Sharma</div>
+        <div class="cert-school">St Xavier's High School · Class 8</div>
+        <div class="cert-rank">National rank #312 · Top 8%</div>
+        <div class="cert-str">Exceptional strength: Spotting Hallucinations & Bias</div>
+        <div class="cert-bars">
+          <div class="cb-row"><span class="cb-lbl">D1</span><div class="cb-track"><div class="cb-fill" style="width:78%;background:#1760A8"></div></div><span class="cb-sc">78</span></div>
+          <div class="cb-row"><span class="cb-lbl">D2</span><div class="cb-track"><div class="cb-fill" style="width:82%;background:#0C6B50"></div></div><span class="cb-sc">82</span></div>
+          <div class="cb-row"><span class="cb-lbl">D3</span><div class="cb-track"><div class="cb-fill" style="width:91%;background:#D4500A"></div></div><span class="cb-sc">91</span></div>
+          <div class="cb-row"><span class="cb-lbl">D4</span><div class="cb-track"><div class="cb-fill" style="width:74%;background:#4A35A8"></div></div><span class="cb-sc">74</span></div>
+          <div class="cb-row"><span class="cb-lbl">D5</span><div class="cb-track"><div class="cb-fill" style="width:79%;background:#C07A00"></div></div><span class="cb-sc">79</span></div>
+          <div class="cb-row"><span class="cb-lbl">D6</span><div class="cb-track"><div class="cb-fill" style="width:83%;background:#076055"></div></div><span class="cb-sc">83</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOR PARENTS -->
+<section class="for-parents" id="parents">
+  <div class="fp-orb-1" id="fpOrb1"></div>
+  <div class="fp-orb-2" id="fpOrb2"></div>
+  <div class="fp-inner">
+    <div class="fp-top">
+      <div class="fp-left">
+        <div class="section-tag">FOR PARENTS</div>
+        <h2 class="fp-headline">REGISTER<br>YOUR<br>CHILD.</h2>
+        <p class="fp-sub">Fees include the Starter Kit, study platform access, and a nationally ranked certificate. Everything your child needs to compete — and to be ready for the world that is coming.</p>
+        <div class="fp-stats">
+          <div><div class="fp-stat-n">600</div><div class="fp-stat-l">points total</div></div>
+          <div><div class="fp-stat-n">60</div><div class="fp-stat-l">minutes</div></div>
+          <div><div class="fp-stat-n">6</div><div class="fp-stat-l">dimensions</div></div>
+        </div>
+        <a href="#" class="btn-primary" style="display:inline-flex">Register your child</a>
+      </div>
+      <div class="fp-right">
+        <div class="fp-item">
+          <div class="fp-item-num">01</div>
+          <div>
+            <div class="fp-item-h">Study at your own pace</div>
+            <div class="fp-item-body">2–3 hours across all six dimensions. Self-paced. Gamified. With AIRA — an AI character who makes mistakes your child learns to catch. No coaching class. No fixed schedule.</div>
+          </div>
+        </div>
+        <div class="fp-item">
+          <div class="fp-item-num">02</div>
+          <div>
+            <div class="fp-item-h">Compete on the day</div>
+            <div class="fp-item-body">60 minutes. Online. Through school. Scenario-based questions — a sports journalist, a farmer in Vidarbha, a doctor in rural Odisha. Every question connects AI to a real career.</div>
+          </div>
+        </div>
+        <div class="fp-item">
+          <div class="fp-item-num">03</div>
+          <div>
+            <div class="fp-item-h">A certificate that means something</div>
+            <div class="fp-item-body">Not 'Participant.' Something like 'Top 8% nationally. Exceptional strength in Spotting Hallucinations & Bias.' That specificity is the point — and that certificate belongs on a college application.</div>
+          </div>
+        </div>
+        <div class="fp-item">
+          <div class="fp-item-num">04</div>
+          <div>
+            <div class="fp-item-h">The Starter Kit</div>
+            <div class="fp-item-body">Five physical objects delivered to your child's school before competition day.</div>
+            <div class="kit-grid">
+              <div class="kit-card"><div class="kit-card-name">Mission Passport</div><div class="kit-card-desc">A6 booklet with your child's name on the cover. Six dimension stamp spaces.</div></div>
+              <div class="kit-card"><div class="kit-card-name">Agent ID Card</div><div class="kit-card-desc">Laminated credit-card identity. Students show this to each other.</div></div>
+              <div class="kit-card"><div class="kit-card-name">AI Spotter Card</div><div class="kit-card-desc">Five hallucination signs. Three verification questions. Lives in the school bag.</div></div>
+              <div class="kit-card"><div class="kit-card-name">Mission Stickers</div><div class="kit-card-desc">Six stickers — one per dimension. Each a micro-celebration.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOR SCHOOLS -->
+<section class="for-schools" id="schools">
+  <div class="fs-orb" id="fsOrb"></div>
+  <div class="fs-inner">
+    <div class="section-tag">FOR SCHOOLS</div>
+    <div class="fs-top">
+      <h2 class="fs-headline">PARTNER<br><span>SCHOOL.</span></h2>
+      <div class="fs-desc">
+        <p>FutureMind is open to every school in India — CBSE, ICSE, IB, Cambridge, or State Board. AI thinking skills are not a curriculum requirement for one board. They are a life requirement for every student, regardless of which syllabus they follow.</p>
+        <p>For CBSE schools implementing the mandatory CT&AI curriculum from 2026–27, FutureMind is the assessment and competition layer that takes students from knowledge to applied judgment. For ICSE schools whose students study AI technically, FutureMind tests the critical thinking side that the technical subject does not cover. For IB and Cambridge schools, FutureMind provides the structured national AI literacy competition that no existing curriculum yet offers on a national stage.</p>
+        <p>One coordinator. Minimal administration. Maximum association value. The school whose students perform best nationally will be the one everyone knows pioneered AI thinking skills.</p>
+        <a href="#" class="btn-primary" style="display:inline-flex">Register your school →</a>
+      </div>
+    </div>
+    <div class="school-benefits">
+      <div class="benefit-card"><div class="benefit-icon">🏆</div><div class="benefit-title">Partner school recognition</div><div class="benefit-desc">Listed on all FutureMind materials and certificates. Early-adopter designation available only to the first cohort of partner schools.</div></div>
+      <div class="benefit-card"><div class="benefit-icon">📊</div><div class="benefit-title">School performance report</div><div class="benefit-desc">Aggregate performance across six dimensions compared to city and national averages. Worth sharing with parents, the board, and prospective families.</div></div>
+      <div class="benefit-card"><div class="benefit-icon">🎖️</div><div class="benefit-title">Partnership badge</div><div class="benefit-desc">Digital badge for website and prospectus. Physical badge for school display. A symbol of AI literacy commitment in every admissions conversation.</div></div>
+      <div class="benefit-card"><div class="benefit-icon">📱</div><div class="benefit-title">Teacher dashboard</div><div class="benefit-desc">Manage registrations, track kit delivery, access competition day information, and download ready-to-send parent communication templates.</div></div>
+      <div class="benefit-card"><div class="benefit-icon">🌟</div><div class="benefit-title">National round recognition</div><div class="benefit-desc">Schools whose students qualify receive recognition in national results materials and digital coverage.</div></div>
+      <div class="benefit-card"><div class="benefit-icon">📚</div><div class="benefit-title">Study platform access</div><div class="benefit-desc">Free platform access for all registered students. Teachers can access the full content library for their own AI literacy development.</div></div>
+    </div>
+    <div class="commit-strip">
+      <div>
+        <div class="commit-h">In plain language — what we ask of you.</div>
+        <div class="commit-body">FutureMind asks your school for approximately 3–4 hours of coordinator time across the full competition cycle. In return: a nationally recognised AI literacy programme, a school performance report, a partnership badge, and — if your students perform — recognition at the national round.</div>
+        <div class="fee-pills">
+          <div class="fee-pill">Year 1 school fee — <span>Free</span></div>
+          <div class="fee-pill">Year 2 onward up to 60 students — <span>₹5,000</span></div>
+          <div class="fee-pill">61–150 students — <span>₹10,000</span></div>
+          <div class="fee-pill">150+ students — <span>₹15,000</span></div>
+        </div>
+      </div>
+      <div class="commit-right">
+        <div class="commit-item"><div class="commit-dot"></div>Designate one coordinator</div>
+        <div class="commit-item"><div class="commit-dot"></div>Distribute the Starter Kit</div>
+        <div class="commit-item"><div class="commit-dot"></div>Provide a computer lab on competition day</div>
+        <div class="commit-item"><div class="commit-dot"></div>Share one parent communication</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CURRICULUM CALLOUT -->
+<section class="curriculum" id="curriculum">
+  <div class="curr-inner">
+    <div>
+      <div class="curr-tag">WHY FUTUREMIND. WHY NOW.</div>
+        <h2 class="curr-h">BUILT FOR EVERY<br>SCHOOL. EVERY BOARD.</h2>
+        <p class="curr-body">No school board in India currently runs a national competition that tests how students think about AI. CBSE has a curriculum. ICSE has a technical subject. IB and Cambridge embed AI across their programmes. But none of them have a national ranking, a national stage, or a ranked certificate that tells a student, a parent, and a college where that student stands.</p>
+        <p class="curr-body" style="margin-top:12px">FutureMind fills that gap — for every student, every board, every stream. No coding. No projects. No technical background required.</p>
+    </div>
+    <div class="curr-right">
+      <div class="curr-item">
+      <div class="curr-check">✓</div>
+      <div class="curr-item-text"><strong>Goes beyond every existing curriculum</strong>Prompt Engineering, Creative Use of AI, and Future of AI are not assessed by any school board in India at the Class 8 level — CBSE, ICSE, IB, or Cambridge. FutureMind opens entirely new territory for every student.</div>
+    </div>
+    <div class="curr-item">
+      <div class="curr-check">✓</div>
+      <div class="curr-item-text"><strong>Applied judgment, not technical knowledge</strong>Where school curricula introduce AI concepts — whether CBSE's awareness approach or ICSE's technical subject — FutureMind tests whether students can actually apply them. Not define bias. Detect it. Not know about ethics. Decide under pressure.</div>
+    </div>
+    <div class="curr-item">
+      <div class="curr-check">✓</div>
+      <div class="curr-item-text"><strong>The only national assessment of its kind</strong>No board in India has a national competition for AI thinking skills. No ranking. No certificate that shows where a student stands nationally. FutureMind is that platform — for every student, every board, every stream.</div>
+    </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final">
+  <div class="final-orb"></div>
+  <div class="final-inner">
+    <h2 class="final-h">READY TO<br><span>BEGIN?</span></h2>
+    <p class="final-sub">Register your child. Register your school as a partner at no cost in Year 1. The first cohort shapes the category. We are at the beginning.</p>
+    <div class="final-ctas">
+      <a href="#" class="btn-primary">Register your child</a>
+      <a href="#" class="btn-outline">Register your school</a>
+    </div>
+    <div class="final-note">futuremind.in · hello@futuremind.in · Mumbai & Thane, Maharashtra, India</div>
+    <div class="demo-buttons">
+      <a href="demos/practice-challenge.html" target="_blank" class="btn-outline">
+        Experience Practice Challenge
+      </a>
+
+      <a href="demos/aira-planet.html" target="_blank" class="btn-outline">
+        Experience AIRA Planet
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo"><div class="logo-mark">FM</div>FUTUREMIND</div>
+        <div class="footer-tag">Preparing Every Young Mind for the World That Is Coming</div>
+        <div class="footer-email">hello@futuremind.in</div>
+        <div class="footer-email">schools@futuremind.in</div>
+        <div class="footer-email">support@futuremind.in</div>
+      </div>
+      <div>
+        <div class="footer-nav-h">NAVIGATE</div>
+        <div class="footer-links">
+          <a href="#belief">The Idea</a>
+          <a href="#dimensions">Six Dimensions</a>
+          <a href="#competition">Competition</a>
+          <a href="#parents">For Parents</a>
+          <a href="#schools">For Schools</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-nav-h">PARENTS</div>
+        <div class="footer-links">
+          <a href="#">How It Works</a>
+          <a href="#">The Starter Kit</a>
+          <a href="#">Register</a>
+          <a href="#">Results & Certificates</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-nav-h">SCHOOLS</div>
+        <div class="footer-links">
+          <a href="#">Partnership Benefits</a>
+          <a href="#">Register Your School</a>
+          <a href="#">Teacher Dashboard</a>
+          <a href="#">School Results Report</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 FutureMind. All rights reserved.</span>
+      <span>Privacy Policy · Terms of Use</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* ── NAV ──────────────────────────────── */
+window.addEventListener('scroll', () =>
+  document.getElementById('nav').classList.toggle('scrolled', scrollY > 60)
+);
+
+/* ── HERO entrance ────────────────────── */
+const intro = gsap.timeline({ delay:.3 });
+intro
+  .to('#eyebrow', { opacity:1, y:0, duration:.9, ease:'power3.out' })
+  .to('#h1',      { opacity:1, y:0, duration:1.1, ease:'power3.out' }, '-=.55')
+  .to('#hsub',    { opacity:1, y:0, duration:.8, ease:'power3.out' }, '-=.6')
+  .to('#hctas',   { opacity:1, y:0, duration:.7, ease:'power3.out' }, '-=.5')
+  .to('#hscroll', { opacity:1, duration:.6 }, '-=.2');
+
+/* ── HERO parallax — grid drifts slower than content ── */
+gsap.to('#hGrid', {
+  yPercent:20, ease:'none',
+  scrollTrigger:{ trigger:'.hero', start:'top top', end:'bottom top', scrub:2 }
+});
+gsap.to('.hero-content', {
+  yPercent:18, ease:'none',
+  scrollTrigger:{ trigger:'.hero', start:'top top', end:'bottom top', scrub:1.2 }
+});
+
+/* ── BELIEF parallax ──────────────────── */
+gsap.to('#bOrb1', {
+  yPercent:-28, ease:'none',
+  scrollTrigger:{ trigger:'.belief', start:'top bottom', end:'bottom top', scrub:2 }
+});
+gsap.to('#bOrb2', {
+  yPercent:-18, ease:'none',
+  scrollTrigger:{ trigger:'.belief', start:'top bottom', end:'bottom top', scrub:1.4 }
+});
+gsap.from('.belief-headline', { opacity:0, y:60, duration:1, ease:'power3.out',
+  scrollTrigger:{ trigger:'.belief-headline', start:'top 82%' } });
+gsap.from('.career-item', { opacity:0, y:32, duration:.6, stagger:.08, ease:'power3.out',
+  scrollTrigger:{ trigger:'.careers-grid', start:'top 82%' } });
+gsap.from('.belief-bottom > *', { opacity:0, y:40, duration:.8, stagger:.15, ease:'power3.out',
+  scrollTrigger:{ trigger:'.belief-bottom', start:'top 86%' } });
+
+/* ── DIMENSIONS — 3+3 slide logic ─────── */
+let dimPage = 0;
+function slideDim(page) {
+  dimPage = page;
+  const slider = document.getElementById('dimSlider');
+  const trackWrap = slider.parentElement;
+  const cardW = trackWrap.offsetWidth;
+  // shift by one full track width (3 cards)
+  slider.style.transform = `translateX(-${page * 50}%)`;
+
+  document.getElementById('dimFill').style.width = page === 0 ? '50%' : '100%';
+  document.getElementById('dimPrev').disabled = page === 0;
+  document.getElementById('dimNext').disabled = page === 1;
+  document.querySelectorAll('.dim-dot').forEach((d,i) => d.classList.toggle('active', i === page));
+}
+
+// scroll-driven auto-slide hint: progress bar fills as you scroll through section
+ScrollTrigger.create({
+  trigger:'.dim-section',
+  start:'top center',
+  end:'bottom center',
+  onUpdate: self => {
+    if (self.progress > .55 && dimPage === 0) slideDim(1);
+    if (self.progress < .45 && dimPage === 1) slideDim(0);
+  }
+});
+
+// card reveals
+gsap.from('.dim-card', { opacity:0, y:40, duration:.7, stagger:.1, ease:'power3.out',
+  scrollTrigger:{ trigger:'.dim-track-wrap', start:'top 82%' } });
+
+/* ── COMPETITION parallax ──────────────── */
+gsap.to('#compOrb', {
+  yPercent:-25, ease:'none',
+  scrollTrigger:{ trigger:'.competition', start:'top bottom', end:'bottom top', scrub:1.8 }
+});
+gsap.to('#compGrid', {
+  yPercent:15, ease:'none',
+  scrollTrigger:{ trigger:'.competition', start:'top bottom', end:'bottom top', scrub:2.5 }
+});
+gsap.from('.comp-headline', { opacity:0, y:70, duration:1, ease:'power3.out',
+  scrollTrigger:{ trigger:'.comp-headline', start:'top 82%' } });
+gsap.from('.stage-item', { opacity:0, y:44, duration:.7, stagger:.14, ease:'power3.out',
+  scrollTrigger:{ trigger:'.stages-grid', start:'top 82%' } });
+gsap.from('.cert-callout', { opacity:0, y:50, duration:.9, ease:'power3.out',
+  scrollTrigger:{ trigger:'.cert-callout', start:'top 86%' } });
+
+/* ── PARENTS parallax ──────────────────── */
+gsap.to('#fpOrb1', {
+  yPercent:-28, ease:'none',
+  scrollTrigger:{ trigger:'.for-parents', start:'top bottom', end:'bottom top', scrub:2 }
+});
+gsap.to('#fpOrb2', {
+  yPercent:-18, ease:'none',
+  scrollTrigger:{ trigger:'.for-parents', start:'top bottom', end:'bottom top', scrub:1.4 }
+});
+gsap.from('.fp-item', { opacity:0, x:40, duration:.7, stagger:.14, ease:'power3.out',
+  scrollTrigger:{ trigger:'.fp-right', start:'top 82%' } });
+
+/* ── SCHOOLS parallax ──────────────────── */
+gsap.to('#fsOrb', {
+  yPercent:-30, ease:'none',
+  scrollTrigger:{ trigger:'.for-schools', start:'top bottom', end:'bottom top', scrub:1.8 }
+});
+gsap.from('.benefit-card', { opacity:0, y:36, duration:.65, stagger:.08, ease:'power3.out',
+  scrollTrigger:{ trigger:'.school-benefits', start:'top 82%' } });
+gsap.from('.commit-strip', { opacity:0, y:50, duration:.9, ease:'power3.out',
+  scrollTrigger:{ trigger:'.commit-strip', start:'top 86%' } });
+
+/* ── CURRICULUM section ────────────────── */
+gsap.from('.curr-item', { opacity:0, x:40, duration:.7, stagger:.15, ease:'power3.out',
+  scrollTrigger:{ trigger:'.curr-right', start:'top 82%' } });
+
+/* ── FINAL CTA ─────────────────────────── */
+gsap.from('.final-h',    { opacity:0, y:80, duration:1, ease:'power3.out',
+  scrollTrigger:{ trigger:'.final-h', start:'top 82%' } });
+gsap.from('.final-sub',  { opacity:0, y:40, duration:.8, ease:'power3.out',
+  scrollTrigger:{ trigger:'.final-sub', start:'top 86%' } });
+gsap.from('.final-ctas', { opacity:0, y:30, duration:.7, ease:'power3.out',
+  scrollTrigger:{ trigger:'.final-ctas', start:'top 90%' } });
+
+/* ── section tags ──────────────────────── */
+gsap.utils.toArray('.section-tag,.section-tag-light,.curr-tag').forEach(el => {
+  gsap.from(el, { opacity:0, x:-28, duration:.65, ease:'power3.out',
+    scrollTrigger:{ trigger:el, start:'top 88%' } });
+});
+</script>
+</body>
+</html>
